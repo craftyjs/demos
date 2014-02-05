@@ -1,0 +1,33 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div id="game"></div>
+    <script src="https://github.com/craftyjs/Crafty/releases/download/0.6.2/crafty-min.js"></script>
+    <script>
+		Crafty.init(600, 300, document.getElementById('game'));
+
+		Crafty.background('rgb(0,0,0)');
+		Crafty.viewport.scale(6);
+
+		Crafty.canvas.init();
+		Crafty.pixelart(true);
+
+		/*
+		// Not working on FF
+		Crafty.e("2D, Canvas, Image")
+			.image("squares.gif");
+		*/
+
+		/*
+		// Not working on Webkit
+		Crafty.e("2D, DOM, Image")
+			.image("squares.gif");
+		*/
+
+		//Should work cross-browser
+		Crafty.sprite(50, 50, "squares.gif", {squares:[0,0]});
+		Crafty.e("2D, Canvas, squares");
+    </script>
+  </body>
+</html>

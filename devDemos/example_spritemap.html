@@ -1,0 +1,31 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <script src="https://github.com/craftyjs/Crafty/releases/download/0.6.2/crafty-min.js"></script>
+    <script>
+        Crafty.init(600, 300, document.getElementById('game'));
+        Crafty.background('rgb(255,255,255)');
+        Crafty.sprite(32, 32, "https://f.cloud.github.com/assets/498834/141935/4135cfb0-7299-11e2-981a-9176b10515b9.png", 
+		{tile0:[0,0], tile1:[1,0]}, 1, 1, true);
+
+        var ent1 = Crafty.e("2D, DOM, tile0, SpriteAnimation").attr({x: 100, y:100});
+        console.log(ent1.__coord);
+        var ent2 = Crafty.e("2D, DOM, tile1").attr({x: 150, y:150});
+        console.log(ent2.__coord);
+
+        var allArr = [
+          [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], 
+          [0, 1], [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1], 
+          [0, 2], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2], 
+          [0, 3], [1, 3], [2, 3], [3, 3], [4, 3], [5, 3], [6, 3], [7, 3], 
+          [0, 4], [1, 4], [2, 4], [3, 4], [4, 4], [5, 4], [6, 4], [7, 4], 
+          [0, 5], [1, 5], [2, 5], [3, 5], [4, 5], [5, 5], [6, 5], [7, 5]
+        ];
+        ent1.reel('Row', 8000, 0, 0, 8);
+        ent1.reel("All", 48000, allArr);
+        //ent1.animate("Row", 1);
+        ent1.animate("All", -1);
+    </script>
+  </body>
+</html>

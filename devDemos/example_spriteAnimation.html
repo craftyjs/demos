@@ -1,0 +1,23 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <script src="https://github.com/craftyjs/Crafty/releases/download/0.6.2/crafty-min.js"></script>
+    <script>
+        Crafty.init(600, 300, document.getElementById('game'));
+        Crafty.background('rgb(127,127,127)');
+
+        // Define a sprite-map component
+        Crafty.sprite(16, "squares.gif", {
+            PlayerSprite: [0,0]
+        });
+
+        var ent = Crafty.e("2D, Canvas, PlayerSprite, SpriteAnimation"); //"DOM" does not work on Chrome for ANY reel animation
+
+        ent.reel('PlayerRunning', 1000, 0, 0, 2); //this does not work with 1
+        //ent.reel('PlayerRunning', 1000, [[0, 0], [1, 0]]);
+            
+        ent.animate('PlayerRunning', -1);
+    </script>
+  </body>
+</html>

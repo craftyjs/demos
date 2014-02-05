@@ -1,0 +1,33 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <script src="https://github.com/craftyjs/Crafty/releases/download/0.6.2/crafty-min.js"></script>
+    <script>
+        Crafty.init(600, 300, document.getElementById('game'));
+        Crafty.background('rgb(127,127,127)');
+    
+        var tweenMode = false;
+        Crafty.e("2D, DOM, Color, platform")
+            .color('rgb(0,255,0)')
+            .attr({ x: 0, y: 280, w: 600, h: 20 });
+        Crafty.e("2D, DOM, Color, platform, Tween")
+            .color('rgb(0,255,0)')
+            .attr({ x: 100, y: 200, w: 50, h: 20 })
+            .tween({x: 450, y: 150}, 2000)
+            .bind("TweenEnd", function() {
+              tweenMode = !tweenMode;
+              if (tweenMode)
+                this.tween({x: 100, y: 200}, 2000);
+              else
+                this.tween({x: 450, y: 150}, 2000);
+            });
+
+        Crafty.e("2D, DOM, Color, Gravity, Twoway, GroundAttacher, Tween")
+          .color('rgb(0,0,255)')
+          .attr({ x: 0, y: 100, w: 32, h: 16 })
+          .gravity("platform")
+          .twoway(2, 5);
+    </script>
+  </body>
+</html>
