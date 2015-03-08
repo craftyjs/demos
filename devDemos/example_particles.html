@@ -7,7 +7,6 @@
         Crafty.init(600, 300, document.getElementById('game'));
         Crafty.background('rgb(127,127,127)');
     
-
         var options = {
           maxParticles: 20,
           size: 20,
@@ -40,12 +39,12 @@
         };
 
 
-        var tweenMode = false;
         Crafty.e("2D, DOM, Color, platform")
             .color('rgb(0,255,0)')
             .attr({ x: 0, y: 280, w: 600, h: 20 });
-
-        var moving = Crafty.e("2D, Canvas, Color, platform, Tween, Particles")
+            
+        var tweenMode = false;
+        Crafty.e("2D, Canvas, Color, platform, Tween, Particles")
             .color('rgb(0,255,0)')
             .attr({ x: 100, y: 200, w: 50, h: 20 })
             .tween({x: 450, y: 150}, 2000)
@@ -58,12 +57,9 @@
             })
             .particles(options);
 
-        Crafty.viewport.clampToEntities = false;
         Crafty.viewport.x = -100;
         Crafty.viewport.y = -100;
         Crafty.viewport.scale(1.5);
-
-
     </script>
   </body>
 </html>
