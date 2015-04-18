@@ -1,0 +1,42 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+        Crafty.init(600, 300, document.getElementById('game'));
+        Crafty.background('rgb(127,127,127)');
+        
+        Crafty.c('DragDebug', {
+          init: function() {
+            this.requires('Draggable');
+            this.bind("StartDrag", function(e) {
+                console.log("StartDrag", e.realX, e.realY);
+              }).bind("Dragging", function(e) {
+                console.log("Dragging", e.realX, e.realY);
+              }).bind("StopDrag", function(e) {
+                console.log("StopDrag", e.realX, e.realY);
+              });
+          }
+        });
+
+        var startDrag = function() {
+          if (Crafty.lastEvent) {
+            this.startDrag();
+            this.unbind("EnterFrame", startDrag);
+          }
+        };
+        Crafty.e('2D, DOM, Color, DragDebug')
+              .attr({x: 100, y: 50, w: 50, h: 50})
+              .color('green')
+              .disableDrag()
+              .enableDrag()
+              .bind("EnterFrame", startDrag);
+
+        Crafty.e('2D, DOM, Color, DragDebug')
+              .attr({x: 200, y: 50, w: 50, h: 50})
+              .color('blue')
+              .disableDrag();
+    </script>
+  </body>
+</html>
