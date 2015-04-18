@@ -1,0 +1,44 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+        Crafty.init(600, 300, document.getElementById('game'));
+        Crafty.background('rgb(127,127,127)');
+
+        var currentFrame = 0;
+        Crafty.bind("EnterFrame", function(frameData) {
+          currentFrame = frameData.frame;
+        });
+
+        Crafty.c("GroundReporter", {
+            init: function() {
+                this.requires("2D, DOM, Color, Gravity")
+                    .color('rgb(0,0,255)')
+                    .bind("hit", function() {
+                      console.log("GROUND", currentFrame);
+                    })
+                    .bind("LandedOnGround", function() {
+                      console.log("GROUND", currentFrame);
+                    });
+            },
+            startGravity: function() {
+                this.gravity("platform");
+            }
+        });
+
+        Crafty.e("2D, DOM, Color, platform")
+            .color('rgb(0,255,0)')
+            .attr({ x: 0, y: 280, w: 600, h: 20 });
+        
+        var y = -1000;
+        while (y < 260) {
+          Crafty.e("GroundReporter")
+            .attr({ x: 0, y: y, w: 32, h: 16 })
+            .startGravity();
+          y += 100;
+        }
+    </script>
+  </body>
+</html>
