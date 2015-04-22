@@ -1,0 +1,31 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+      Crafty.init(600, 300, document.getElementById('game'));
+      Crafty.background('rgb(127,127,127)');
+
+      Crafty.e("2D, DOM, Color, platform")
+        .attr({ x: 0, y: 280, w: 600, h: 1 })
+        .color('rgb(0,255,0)');
+
+      Crafty.e("2D, DOM, Color, Gravity, Twoway")
+        .attr({ x: 0, y: 260, w: 32, h: 16, hasDoubleJumpPowerUp: true})
+        .color('rgb(0,0,255)')
+        .gravityConst(0.4)
+        .gravity("platform")
+        .twoway(3)
+        .bind("CheckJumping", function(ground) {
+          if (!ground && this.hasDoubleJumpPowerUp) { // allow player to double jump by using up his double jump powerup
+            this.canJump = true;
+            this.hasDoubleJumpPowerUp = false;
+          }
+        })
+        .bind("LandedOnGround", function(ground) {
+          this.hasDoubleJumpPowerUp = true; // give player new double jump powerup upon landing
+        });
+    </script>
+  </body>
+</html>
