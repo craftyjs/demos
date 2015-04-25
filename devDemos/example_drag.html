@@ -20,20 +20,30 @@
           }
         });
 
-        var startDrag = function() {
+        var frames = 0;
+        var stop = function() {
+          frames++;
+          if (frames >= 100) {
+            this.stopDrag();
+            this.unbind("EnterFrame", stop);
+          }
+        }
+        var start = function() {
           if (Crafty.lastEvent) {
             this.startDrag();
-            this.unbind("EnterFrame", startDrag);
+            this.unbind("EnterFrame", start);
+            this.bind("EnterFrame", stop);
           }
         };
-        Crafty.e('2D, DOM, Color, DragDebug')
+
+        Crafty.e('2D, Canvas, Color, DragDebug')
               .attr({x: 100, y: 50, w: 50, h: 50})
               .color('green')
               .disableDrag()
               .enableDrag()
-              .bind("EnterFrame", startDrag);
+              .bind("EnterFrame", start);
 
-        Crafty.e('2D, DOM, Color, DragDebug')
+        Crafty.e('2D, Canvas, Color, DragDebug')
               .attr({x: 200, y: 50, w: 50, h: 50})
               .color('blue')
               .disableDrag();
