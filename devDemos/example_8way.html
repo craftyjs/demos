@@ -1,0 +1,23 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+      Crafty.init(600, 300, document.getElementById('game'));
+      Crafty.background('rgb(127,127,127)');
+
+      Crafty.e("2D, DOM, Color, Multiway")
+        .attr({ x: 0, y: 100, w: 32, h: 32})
+        .color('rgb(0,0,255)')
+        .multiway({
+          NUMPAD_7:-135, NUMPAD_8: -90, NUMPAD_9: -45,
+          NUMPAD_4: 180,                NUMPAD_6:   0,
+          NUMPAD_1: 135, NUMPAD_2:  90, NUMPAD_3:  45
+        })
+        .bind("MotionChange", function(e) {
+          //console.log(e);
+        });
+    </script>
+  </body>
+</html>
