@@ -1,0 +1,82 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <script src="https://raw.githubusercontent.com/craftyjs/Crafty-Distro/nightlies/crafty.js"></script>
+    <script>
+    /*****************
+     **** ENGINE *****
+     *****************/
+    Crafty.c("Isometric", {
+        _iso: null,
+
+        init: function() {
+            this._iso = Crafty.e("2D");
+
+            this.bind("Move", this._updateIso);
+            this.bind("reorder", this._updateIso);
+            this._updateIso();
+        },
+
+        _updateIso: function() {
+            var iso = this._iso;
+            iso.x = this._x - this._y;
+            iso.y = (this._x + this._y) / 2 - this._z;
+            iso.z = this._x + this._y + this._z * 2;
+        },
+
+        isometric: function(components, callback) {
+            var iso = this._iso;
+            iso.requires(components);
+            if (callback) callback.call(iso, this);
+
+            return this;
+        }
+    });
+
+    /*****************
+     ****** GAME *****
+     *****************/
+    Crafty.init(600, 600);
+    Crafty.background('gray');
+
+    Crafty.sprite(128, "https://raw.githubusercontent.com/craftyjs/demos/master/isometric/images/sprite.png", {
+        grass: [0,0,1,1],
+        stone: [1,0,1,1]
+    });
+
+    var tileSize = 64;
+
+    // environment
+    Crafty.e("2D, Multiway, Isometric")
+        .attr({ x: 0 * tileSize, y: 0 * tileSize, z: 0 * tileSize})
+        .isometric("2D, DOM, grass");
+    Crafty.e("2D, Multiway, Isometric")
+        .attr({ x: 0 * tileSize, y: 0 * tileSize, z: 1 * tileSize})
+        .isometric("2D, DOM, grass");
+    Crafty.e("2D, Multiway, Isometric")
+        .attr({ x: 2 * tileSize, y: 0 * tileSize, z: 0 * tileSize})
+        .isometric("2D, DOM, grass");
+    Crafty.e("2D, Multiway, Isometric")
+        .attr({ x: 0 * tileSize, y: 2 * tileSize, z: 0 * tileSize})
+        .isometric("2D, DOM, grass");
+    Crafty.e("2D, Multiway, Isometric")
+        .attr({ x: 2 * tileSize, y: 2 * tileSize, z: 0 * tileSize})
+        .isometric("2D, DOM, grass");
+
+    // player
+    Crafty.e("2D, Multiway, Isometric")
+        .attr({ x: 1 * tileSize, y: 1 * tileSize, z: 0 * tileSize})
+        .multiway(100, {
+            UP_ARROW: -135, W: -135,
+            DOWN_ARROW: 45, S: 45,
+            RIGHT_ARROW: -45, D: -45,
+            LEFT_ARROW: 135, A: 135
+        })
+        .isometric("2D, DOM, stone");
+
+    Crafty.viewport.scroll("_x", 200);
+    Crafty.viewport.scroll("_y", 200);
+    </script>
+  </body>
+</html>
