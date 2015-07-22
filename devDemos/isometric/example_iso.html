@@ -138,16 +138,17 @@
 
     // TILE MAP
     var map = [ [], [], [], [], [], [], [] ]; // 6x6
+    var comps = "Solid, Collision";
     // simple blocks
-    map[0][0] = [ {c: "Solid", i: "DOM, block"}, {c: "Solid", i: "DOM, block"} ];
-    map[2][0] = {c: "Solid", i: "DOM, block"};
-    map[0][2] = {c: "Solid", i: "DOM, block"};
-    map[6][6] = {c: "Solid", i: "DOM, block"};
+    map[0][0] = [ {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"} ];
+    map[2][0] = {c: comps, i: "DOM, block"};
+    map[0][2] = {c: comps, i: "DOM, block"};
+    map[6][6] = {c: comps, i: "DOM, block"};
     // towers
-    map[0][3] = {d: 3, c: "Solid", i: "DOM, tower"};
-    map[3][0] = {d: 3, c: "Solid", i: "DOM, tower"};
+    map[0][3] = {d: 3, c: comps, i: "DOM, tower"};
+    map[3][0] = {d: 3, c: comps, i: "DOM, tower"};
     // big blocks
-    map[4][4] = {w: 2, h: 2, c: "Solid", i: "DOM, big"};
+    map[4][4] = {w: 2, h: 2, c: comps, i: "DOM, big"};
     // flat planes
     map[1][1] = {d: 0, i: "DOM, plane"};
     map[1][0] = [ {d: 0, i: "DOM, plane"}, {d: 0, i: "DOM, plane"} ];
@@ -161,7 +162,7 @@
         }, 3000, 0, function() {
             this.delay(function() {
                 this.rotation = 0;
-            }, 6000);
+            }, 3000);
         });
 
     // PLAYER
