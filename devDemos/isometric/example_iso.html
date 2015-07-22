@@ -1,0 +1,176 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <script src="https://raw.githubusercontent.com/craftyjs/Crafty-Distro/nightlies/crafty.js"></script>
+    <script>
+    /*****************
+     **** ENGINE *****
+     *****************/
+    Crafty.c("Isometric", {
+        _d: 0,
+        _iso: null,
+
+        init: function() {
+            // define public property 'd'
+            Crafty.defineField(this, "d", function() { return this._d; }, function(newValue) {
+                var oldValue = this._d;
+                if (newValue !== oldValue) {
+                    this._d = newValue;
+                    this.trigger("ResizeDepth", oldValue);
+                }
+            });
+            // hide private property '_d'
+            Object.defineProperty(this, "_d", {
+                value : 0,
+                writable : true,
+                enumerable : false,
+                configurable : false
+            });
+            
+            this._iso = Crafty.e("2D").attr({ _controller: this });
+            this.bind("Move", this._updateIso);
+            this.bind("reorder", this._updateIso);
+            this.bind("ResizeDepth", this._updateIso);
+            var resizeIso = function(evt) {
+                var otherAxis = evt.axis === 'w' ? 'h' : 'w';
+                this[otherAxis] = this[evt.axis];
+                this._updateIso();
+            };
+            this.bind("Resize", resizeIso);
+            var rotateIso = function() {
+                Crafty.error("Rotation is not supported yet in Isometric component!");
+            };
+            this.bind("Rotate", rotateIso);
+            this._updateIso();
+        },
+
+        _updateIso: function() {
+            var iso = this._iso;
+            iso.x = this._x - this._y - this._w;
+            iso.y = (this._x + this._y) / 2 - (this._z + this._d);
+            iso.z = this._x + this._y + this._w + this._z * 10000 + (this._d ? 5000 : 0);
+            iso.w = this._w + this._h;
+            iso.h = this._h + this._d;
+        },
+
+        isometric: function(components, callback) {
+            var iso = this._iso;
+            iso.requires(components);
+            if (callback) callback.call(iso, this);
+
+            return this;
+        }
+    });
+
+    var Isometric = {
+        placeTile: function(x, y, tileSize, tile) {
+            var z = (typeof tile.z !== "undefined") ? tile.z : 0,
+                w = (typeof tile.w !== "undefined") ? tile.w : 1,
+                h = (typeof tile.h !== "undefined") ? tile.h : 1,
+                d = (typeof tile.d !== "undefined") ? tile.d : 1,
+                c = (typeof tile.c === "string") ? "2D, Isometric, " + tile.c : "2D, Isometric",
+                i = tile.i;
+
+            return Crafty.e(c)
+                    .attr({ x: x * tileSize, y: y * tileSize, z: z * tileSize,
+                            w: w * tileSize, h: h * tileSize, d: d * tileSize })
+                    .isometric(i);
+        },
+        placeTileMap: function(tileSize, map) {
+            var mapEntity = Crafty.e("2D, Isometric").attr({ x: 0, y: 0, z: 0});
+
+            var isoMap = [];
+            for (var i = 0; i < map.length; i++) {
+                isoMap[i] = [];
+                for (var j = 0; j < map[i].length; j++) {
+                    isoMap[i][j] = [];
+
+                    var tile = map[i][j];
+                    if (tile && tile.constructor === Array) {
+
+                        var lowerTileK = -1;
+                        for (var k = 0; k < tile.length; k++) {
+                            var subTile = tile[k];
+                            if (subTile) {
+                                subTile.z = (typeof subTile.z !== "undefined") ? subTile.z : k;
+                                subTile.d = (typeof subTile.d !== "undefined") ? subTile.d : k - lowerTileK;
+                                var tileEntity = this.placeTile(i, j, tileSize, subTile);
+                                isoMap[i][j][k] = tileEntity;
+                                mapEntity.attach(tileEntity);
+
+                                lowerTileK = k;
+                            }
+                        }
+
+                    } else if (tile) {
+                        var tileEntity = this.placeTile(i, j, tileSize, tile);
+                        isoMap[i][j][0] = tileEntity;
+                        mapEntity.attach(tileEntity);
+                    }
+                }
+            }
+
+            mapEntity._isoMap = isoMap;
+            return mapEntity;
+        }
+    };
+
+    /*****************
+     ****** GAME *****
+     *****************/
+    Crafty.init(600, 600);
+    Crafty.background('gray');
+
+    Crafty.sprite(128, 64, "https://raw.githubusercontent.com/craftyjs/demos/master/devDemos/isometric/iso-sprites.png", {
+        block: [0,0,1,2],
+        player: [1,0,1,2],
+        tower: [2,0,1,4],
+        big: [0,2,2,3],
+        plane: [2,4,1,1]
+    });
+
+    var size = 64;
+
+    var map = [ [], [], [], [], [], [], [] ]; // 6x6
+    // simple blocks
+    map[0][0] = [ {c: "Solid", i: "DOM, block"}, {c: "Solid", i: "DOM, block"} ];
+    map[2][0] = {c: "Solid", i: "DOM, block"};
+    map[0][2] = {c: "Solid", i: "DOM, block"};
+    map[6][6] = {c: "Solid", i: "DOM, block"};
+    // towers
+    map[0][3] = {d: 3, c: "Solid", i: "DOM, tower"};
+    map[3][0] = {d: 3, c: "Solid", i: "DOM, tower"};
+    // big blocks
+    map[4][4] = {w: 2, h: 2, c: "Solid", i: "DOM, big"};
+    // flat planes
+    map[1][1] = {d: 0, i: "DOM, plane"};
+    map[1][0] = [ {d: 0, i: "DOM, plane"}, {d: 0, i: "DOM, plane"} ];
+    map[0][1] = [ {d: 0, i: "DOM, plane"}, {d: 0, i: "DOM, plane"} ];
+    map[1][2] = {d: 0, i: "DOM, plane"};
+    map[2][1] = {d: 0, i: "DOM, plane"};
+    var mapEntity = Isometric.placeTileMap(size, map);
+
+    // player
+    var playerEntity = Crafty.e("2D, Multiway, Collision, Isometric")
+        .attr({ x: 1 * size, y: 1 * size, z: 0 * size,
+                w: 1 * size, h: 1 * size, d: 1 * size })
+        .multiway(100, {
+            UP_ARROW: -135, W: -135,
+            DOWN_ARROW: 45, S: 45,
+            RIGHT_ARROW: -45, D: -45,
+            LEFT_ARROW: 135, A: 135
+        })
+        .bind("Moved", function(evt) {
+            if (this.hit('Solid')) {
+                this[evt.axis] = evt.oldValue;
+            }
+
+        })
+        .isometric("2D, DOM, player");
+
+    Crafty.viewport.scroll("_x", 300);
+    Crafty.viewport.scroll("_y", 150);
+    </script>
+  </body>
+</html>
