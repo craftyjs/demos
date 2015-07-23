@@ -53,7 +53,7 @@
             var mbr = this._mbr || this;
             iso.x = mbr._x - mbr._y - mbr._w;
             iso.y = (mbr._x + mbr._y) / 2 - (this._z + this._d);
-            iso.z = mbr._x + mbr._y + mbr._w + this._z * 10000 + (this._d ? 5000 : 0);
+            iso.z = mbr._x + mbr._y + mbr._w + this._z * 3 + this._d * 2;
             iso.w = mbr._w + mbr._h;
             iso.h = mbr._h + this._d;
         },
@@ -137,58 +137,73 @@
     var size = 64;
 
     // TILE MAP
-    var map = [ [], [], [], [], [], [], [] ]; // 6x6
+    var map = [ [], [], [], [], [], [], [] ]; // 7x7
     var comps = "Solid, Collision";
-    // simple blocks
-    map[0][0] = [ {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"} ];
-    map[2][0] = {c: comps, i: "DOM, block"};
-    map[0][2] = {c: comps, i: "DOM, block"};
+    // simple block
     map[6][6] = {c: comps, i: "DOM, block"};
-    // towers
-    map[0][3] = {d: 3, c: comps, i: "DOM, tower"};
-    map[3][0] = {d: 3, c: comps, i: "DOM, tower"};
-    // big blocks
+    // big block
     map[4][4] = {w: 2, h: 2, c: comps, i: "DOM, big"};
     // flat planes
     map[1][1] = {d: 0, i: "DOM, plane"};
-    map[1][0] = [ {d: 0, i: "DOM, plane"}, {d: 0, i: "DOM, plane"} ];
-    map[0][1] = [ {d: 0, i: "DOM, plane"}, {d: 0, i: "DOM, plane"} ];
     map[1][2] = {d: 0, i: "DOM, plane"};
     map[2][1] = {d: 0, i: "DOM, plane"};
+    // stacked blocks
+    map[0][0] = [ {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"} ];
+    map[1][0] = [ {d: 0, i: "DOM, plane"}, {d: 0, i: "DOM, plane"}, {d: 0, i: "DOM, plane"}];
+    map[0][1] = [ {d: 0, i: "DOM, plane"}, {d: 0, i: "DOM, plane"}, {d: 0, i: "DOM, plane"}];
+    map[0][2] = [ {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"} ];
+    map[2][0] = [ {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"} ];
+    map[0][3] = [ {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"} ];
+    map[3][0] = [ {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"} ];
     var mapEntity = Isometric.placeTileMap(size, map);
-    mapEntity.requires("Delay")
-        .delay(function() {
-            this.rotation = 90;
-        }, 3000, 0, function() {
-            this.delay(function() {
-                this.rotation = 0;
-            }, 3000);
-        });
+
+    var keyRotations = {};
+    keyRotations[Crafty.keys.NUMPAD_4] = 90;
+    keyRotations[Crafty.keys.NUMPAD_8] = 0,
+    keyRotations[Crafty.keys.NUMPAD_6] = -90,
+    keyRotations[Crafty.keys.NUMPAD_2] = -180
+    mapEntity.bind("KeyDown", function(e) {
+        var rotation = keyRotations[e.key];
+        if (typeof rotation !== "undefined") {
+            this.rotation = rotation;
+        }
+    });
+
 
     // PLAYER
-    var playerEntity = Crafty.e("2D, Multiway, Collision, Delay, Isometric")
+    var playerEntity = Crafty.e("2D, Multiway, Collision, Isometric")
         .attr({ x: 1 * size, y: 1 * size, z: 0 * size,
                 w: 1 * size, h: 1 * size, d: 1 * size })
+        .collision(new Crafty.polygon([1,1, size-1,1, size-1,size-1, 1,size-1]))
+        .bind("Moved", function(evt) {
+            var collisionDatas = this.hit('Solid');
+            for (var i = 0; i < collisionDatas.length; i++) {
+                var collider = collisionDatas[i].obj;
+                if (this._z < collider._z + collider._d && this._z + this._d > collider._z) {
+                    this[evt.axis] = evt.oldValue;
+                    break;
+                }
+            }
+        })
         .multiway(100, {
             UP_ARROW: -135, W: -135,
             DOWN_ARROW: 45, S: 45,
             RIGHT_ARROW: -45, D: -45,
             LEFT_ARROW: 135, A: 135
         })
-        .collision(new Crafty.polygon([1,1, size-1,1, size-1,size-1, 1,size-1]))
-        .bind("Moved", function(evt) {
-            if (this.hit('Solid')) {
-                this[evt.axis] = evt.oldValue;
-            }
+        .bind("KeyDown", function(e) {
+            if (e.key === Crafty.keys.ADD)
+                this.z += size;
+            else if (e.key === Crafty.keys.SUBSTRACT)
+                this.z -= size;
         })
-        .isometric("2D, DOM, player")
-        .delay(function() {
-            this.rotation = 90;
-        }, 4500);
+        .isometric("2D, DOM, player");
+    mapEntity.attach(playerEntity);
+
 
     // VIEWPORT
-    Crafty.viewport.scroll("_x", 300);
-    Crafty.viewport.scroll("_y", 150);
+    Crafty.viewport.clampToEntities = false;
+    Crafty.viewport.follow(playerEntity._iso);
     </script>
   </body>
 </html>
