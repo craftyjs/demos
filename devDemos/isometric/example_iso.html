@@ -53,7 +53,7 @@
             var mbr = this._mbr || this;
             iso.x = mbr._x - mbr._y - mbr._w;
             iso.y = (mbr._x + mbr._y) / 2 - (this._z + this._d);
-            iso.z = mbr._x + mbr._y + mbr._w + this._z * 3 + this._d * 2;
+            iso.z = mbr._x + mbr._y + mbr._w + this._z * 1e6 + (this._d ? 1e5 : 0);
             iso.w = mbr._w + mbr._h;
             iso.h = mbr._h + this._d;
         },
@@ -93,17 +93,15 @@
                     var tile = map[i][j];
                     if (tile && tile.constructor === Array) {
 
-                        var lowerTileK = -1;
                         for (var k = 0; k < tile.length; k++) {
                             var subTile = tile[k];
                             if (subTile) {
+                                subTile = Object.create(subTile);
                                 subTile.z = (typeof subTile.z !== "undefined") ? subTile.z : k;
-                                subTile.d = (typeof subTile.d !== "undefined") ? subTile.d : k - lowerTileK;
+                                subTile.d = (typeof subTile.d !== "undefined") ? subTile.d : 1;
                                 var tileEntity = this.placeTile(i, j, tileSize, subTile);
                                 isoMap[i][j][k] = tileEntity;
                                 mapEntity.attach(tileEntity);
-
-                                lowerTileK = k;
                             }
                         }
 
@@ -134,29 +132,51 @@
         plane: [2,4,1,1]
     });
 
+    // TILSESIZE
     var size = 64;
 
-    // TILE MAP
-    var map = [ [], [], [], [], [], [], [] ]; // 7x7
-    var comps = "Solid, Collision";
-    // simple block
-    map[6][6] = {c: comps, i: "DOM, block"};
-    // big block
-    map[4][4] = {w: 2, h: 2, c: comps, i: "DOM, big"};
-    // flat planes
-    map[1][1] = {d: 0, i: "DOM, plane"};
-    map[1][2] = {d: 0, i: "DOM, plane"};
-    map[2][1] = {d: 0, i: "DOM, plane"};
+    // TILES
+    var simple = {c: "Solid, Collision", i: "DOM, block"};
+    var big = {w: 2, h: 2, c: "Solid, Collision", i: "DOM, big"};
+    var plane = {d: 0, i: "DOM, plane"};
+
+    // MAIN TILE MAP
+    var map = [ [], [], [], [] ]; // 4x4
+    // planes
+    map[1][1] = plane;
+    map[1][2] = plane;
+    map[2][1] = plane;
     // stacked blocks
-    map[0][0] = [ {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"} ];
-    map[1][0] = [ {d: 0, i: "DOM, plane"}, {d: 0, i: "DOM, plane"}, {d: 0, i: "DOM, plane"}];
-    map[0][1] = [ {d: 0, i: "DOM, plane"}, {d: 0, i: "DOM, plane"}, {d: 0, i: "DOM, plane"}];
-    map[0][2] = [ {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"} ];
-    map[2][0] = [ {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"} ];
-    map[0][3] = [ {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"} ];
-    map[3][0] = [ {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"}, {c: comps, i: "DOM, block"} ];
+    map[0][0] = [ simple, simple ];
+    map[1][0] = [ plane, plane, plane ];
+    map[0][1] = [ plane, plane, plane ];
+    map[0][2] = [ simple, simple ];
+    map[2][0] = [ simple, simple ];
+    map[0][3] = [ simple, simple, simple ];
+    map[3][0] = [ simple, simple, simple ];
     var mapEntity = Isometric.placeTileMap(size, map);
 
+    // "TOWER OF POWER" TILE SUBMAP
+    towerMap = [ [], [], [], [] ]; // 4 x 4
+    towerMap[1][1] = [ big, big, big, big, big ];
+    towerMap[2][3] = simple;
+    towerMap[3][3] = simple;
+    towerMap[3][2] = simple;
+    towerMap[3][1] = [null, simple];
+    towerMap[3][0] = [null, simple];
+    towerMap[2][0] = [null, simple];
+    towerMap[1][0] = [null, null, simple];
+    towerMap[0][0] = [null, null, simple];
+    towerMap[0][1] = [null, null, simple];
+    towerMap[0][2] = [null, null, null, simple];
+    towerMap[0][3] = [null, null, null, simple];
+    towerMap[1][3] = [null, null, null, simple];
+    var tower = Isometric.placeTileMap(size, towerMap);
+    tower.attr({ x: 7 * size, y: 7 * size });
+    mapEntity.attach(tower);
+
+
+    // VIEWPORT ROTATIONS
     var keyRotations = {};
     keyRotations[Crafty.keys.NUMPAD_4] = 90;
     keyRotations[Crafty.keys.NUMPAD_8] = 0,
@@ -192,9 +212,9 @@
             LEFT_ARROW: 135, A: 135
         })
         .bind("KeyDown", function(e) {
-            if (e.key === Crafty.keys.ADD)
+            if (e.key === Crafty.keys.SPACE)
                 this.z += size;
-            else if (e.key === Crafty.keys.SUBSTRACT)
+            else if (e.key === Crafty.keys.CTRL)
                 this.z -= size;
         })
         .isometric("2D, DOM, player");
