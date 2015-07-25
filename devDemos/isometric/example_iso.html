@@ -85,7 +85,44 @@
         }
     });
 
+    Crafty.c("IsometricDraggable", {
+        init: function() {
+            this.requires("Draggable");
+            this.bind("StopDrag", this._isometricStopDrag);
+        },
+        remove: function() {
+            this.unbind("StopDrag", this._isometricStopDrag);
+        },
+        enableDrag: function () {
+            this.uniqueBind("Dragging", this._drag);
+            this.uniqueBind("StopDrag", this._isometricStopDrag);
+            return this;
+        },
+        disableDrag: function () {
+            this.unbind("Dragging", this._drag);
+            this.unbind("StopDrag", this._isometricStopDrag);
+            return this;
+        },
+        _isometricStopDrag: function(e) {
+            var diff = Isometric.isometricToTopdown( {x: this._x - this._oldX, y: this._y - this._oldY} );
+            this._isoController.x += diff.x;
+            this._isoController.y += diff.y;
+        }
+    });
+
     var Isometric = {
+        isometricToTopdown: function(inPoint, outPoint) {
+            var outPoint = outPoint || {};
+            outPoint.x = inPoint.x / 2 + inPoint.y;
+            outPoint.y = inPoint.y - inPoint.x / 2;
+            return outPoint;
+        },
+        topdownToIsometric: function(inPoint, outPoint) {
+            var outPoint = outPoint || {};
+            outPoint.x = inPoint.x - inPoint.y;
+            outPoint.y = (inPoint.x + inPoint.y) / 2;
+            return outPoint;
+        },
         _annotateTile: function(x, y, z, w, h, d, tile) {
             tile.addComponent("TILE");
 
@@ -217,18 +254,30 @@
     mapEntity.attach(tower);
 
 
-    // VIEWPORT ROTATIONS
-    var keyRotations = {};
-    keyRotations[Crafty.keys.NUMPAD_4] = 90;
-    keyRotations[Crafty.keys.NUMPAD_8] = 0,
-    keyRotations[Crafty.keys.NUMPAD_6] = -90,
-    keyRotations[Crafty.keys.NUMPAD_2] = -180
-    mapEntity.bind("KeyDown", function(e) {
-        var rotation = keyRotations[e.key];
-        if (typeof rotation !== "undefined") {
-            this.rotation = rotation;
+    // DRAGGABLE TILES
+    Crafty("TILE").each(function() {
+        var iso = this._isoDisplay;
+
+        iso.requires("IsometricDraggable")
+            .bind("StopDrag", function() {
+                var isoController = this._isoController;
+                isoController.x = Math.round(isoController.x / size) * size;
+                isoController.y = Math.round(isoController.y / size) * size;
+            });
+
+        iso.requires("AreaMap");
+        if (this._d) {
+            iso.areaMap(64,0, 128,32, 128,96, 64,128, 0,96, 0,32);
+        } else {
+            iso.areaMap(64,0, 128,32, 64,64 ,0,32);
         }
+
+        iso.bind("Click", function(e) {
+            var ctrl = this._isoController;
+            console.log("You clicked at [" + ctrl._x/size + "][" + ctrl._y/size + "][" + ctrl._z/size + "]");
+        });
     });
+
 
 
     // PLAYER
@@ -260,6 +309,19 @@
     // VIEWPORT
     Crafty.viewport.clampToEntities = false;
     Crafty.viewport.follow(playerEntity._isoDisplay);
+
+    // VIEWPORT ROTATIONS
+    var keyRotations = {};
+    keyRotations[Crafty.keys.NUMPAD_4] = 90;
+    keyRotations[Crafty.keys.NUMPAD_8] = 0,
+    keyRotations[Crafty.keys.NUMPAD_6] = -90,
+    keyRotations[Crafty.keys.NUMPAD_2] = -180
+    mapEntity.bind("KeyDown", function(e) {
+        var rotation = keyRotations[e.key];
+        if (typeof rotation !== "undefined") {
+            this.rotation = rotation;
+        }
+    });
     </script>
   </body>
 </html>
