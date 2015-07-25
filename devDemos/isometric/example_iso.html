@@ -9,7 +9,7 @@
      *****************/
     Crafty.c("Isometric", {
         _d: 0,
-        _iso: null,
+        _isoDisplay: null,
 
         init: function() {
             // define public property 'd'
@@ -29,7 +29,7 @@
             });
 
             
-            this._iso = Crafty.e("2D").attr({ _controller: this });
+            this._isoDisplay = Crafty.e("2D").attr({ _isoController: this });
             this.bind("Move", this._updateIso);
             this.bind("reorder", this._updateIso);
             this.bind("ResizeDepth", this._updateIso);
@@ -49,7 +49,7 @@
         },
 
         _updateIso: function() {
-            var iso = this._iso;
+            var iso = this._isoDisplay;
             var mbr = this._mbr || this;
             iso.x = mbr._x - mbr._y - mbr._w;
             iso.y = (mbr._x + mbr._y) / 2 - (this._z + this._d);
@@ -59,7 +59,7 @@
         },
 
         isometric: function(components, callback) {
-            var iso = this._iso;
+            var iso = this._isoDisplay;
             iso.requires(components);
             if (callback) callback.call(iso, this);
 
@@ -67,7 +67,44 @@
         }
     });
 
+    Crafty.c("Collision3D", {
+        init: function() {
+            this.requires("Collision");
+        },
+        hit3D: function(component) {
+            var collisionDatas = this.hit(component);
+
+            var i = collisionDatas.length;
+            while (--i >= 0) {
+                var collider = collisionDatas[i].obj;
+                if (!(this._z < collider._z + collider._d && this._z + this._d > collider._z))
+                    collisionDatas.splice(i, 1);
+            }
+
+            return (collisionDatas.length ? collisionDatas : false);
+        }
+    });
+
     var Isometric = {
+        _annotateTile: function(x, y, z, w, h, d, tile) {
+            tile.addComponent("TILE");
+
+            for (var i = x; i < x + w; i++) {
+                tile.addComponent("TILE_X[" + i + "]");
+                for (var j = y; j < y + h; j++) {
+                    tile.addComponent("TILE_Y[" + j + "]");
+                    tile.addComponent("TILE_XY[" + i + "][" + j + "]");
+                    for (var k = z; k < z + 1; k++) {
+                        tile.addComponent("TILE_Z[" + k + "]");
+                        tile.addComponent("TILE_XZ[" + i + "][" + k + "]");
+                        tile.addComponent("TILE_YZ[" + j + "][" + k + "]");
+                        tile.addComponent("TILE_XYZ[" + i + "][" + j + "][" + k + "]");
+                    }
+                }
+            }
+
+            return tile;
+        },
         placeTile: function(x, y, tileSize, tile) {
             var z = (typeof tile.z !== "undefined") ? tile.z : 0,
                 w = (typeof tile.w !== "undefined") ? tile.w : 1,
@@ -76,13 +113,14 @@
                 c = (typeof tile.c === "string") ? "2D, Isometric, " + tile.c : "2D, Isometric",
                 i = tile.i;
 
-            return Crafty.e(c)
-                    .attr({ x: x * tileSize, y: y * tileSize, z: z * tileSize,
-                            w: w * tileSize, h: h * tileSize, d: d * tileSize })
-                    .isometric(i);
+            return this._annotateTile(x, y, z, w, h, d, Crafty.e(c)
+                        .attr({ x: x * tileSize, y: y * tileSize, z: z * tileSize,
+                                w: w * tileSize, h: h * tileSize, d: d * tileSize })
+                        .isometric(i));
         },
         placeTileMap: function(tileSize, map) {
             var mapEntity = Crafty.e("2D").attr({ x: 0, y: 0, z: 0});
+            mapEntity.addComponent("TILEMAP");
 
             var isoMap = [];
             for (var i = 0; i < map.length; i++) {
@@ -99,8 +137,10 @@
                                 subTile = Object.create(subTile);
                                 subTile.z = (typeof subTile.z !== "undefined") ? subTile.z : k;
                                 subTile.d = (typeof subTile.d !== "undefined") ? subTile.d : 1;
+
                                 var tileEntity = this.placeTile(i, j, tileSize, subTile);
                                 isoMap[i][j][k] = tileEntity;
+                                tileEntity._isoMapController = mapEntity;
                                 mapEntity.attach(tileEntity);
                             }
                         }
@@ -108,12 +148,13 @@
                     } else if (tile) {
                         var tileEntity = this.placeTile(i, j, tileSize, tile);
                         isoMap[i][j][0] = tileEntity;
+                        tileEntity._isoMapController = mapEntity;
                         mapEntity.attach(tileEntity);
                     }
                 }
             }
 
-            mapEntity._isoMap = isoMap;
+            mapEntity._isoControllerMap = isoMap;
             return mapEntity;
         }
     };
@@ -191,18 +232,13 @@
 
 
     // PLAYER
-    var playerEntity = Crafty.e("2D, Multiway, Collision, Isometric")
+    var playerEntity = Crafty.e("2D, Multiway, Collision3D, Isometric")
         .attr({ x: 1 * size, y: 1 * size, z: 0 * size,
                 w: 1 * size, h: 1 * size, d: 1 * size })
-        .collision(new Crafty.polygon([1,1, size-1,1, size-1,size-1, 1,size-1]))
+        .collision(1,1, size-1,1, size-1,size-1, 1,size-1)
         .bind("Moved", function(evt) {
-            var collisionDatas = this.hit('Solid');
-            for (var i = 0; i < collisionDatas.length; i++) {
-                var collider = collisionDatas[i].obj;
-                if (this._z < collider._z + collider._d && this._z + this._d > collider._z) {
-                    this[evt.axis] = evt.oldValue;
-                    break;
-                }
+            if (this.hit3D('Solid')) {
+                this[evt.axis] = evt.oldValue;
             }
         })
         .multiway(100, {
@@ -223,7 +259,7 @@
 
     // VIEWPORT
     Crafty.viewport.clampToEntities = false;
-    Crafty.viewport.follow(playerEntity._iso);
+    Crafty.viewport.follow(playerEntity._isoDisplay);
     </script>
   </body>
 </html>
