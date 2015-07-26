@@ -1,0 +1,148 @@
+<html>
+  <head></head>
+  <body>
+    <script src="https://raw.githubusercontent.com/craftyjs/Crafty-Distro/nightlies/crafty.js"></script>
+    <script src="https://raw.githubusercontent.com/craftyjs/demos/master/devDemos/isometric/iso-engine.js"></script>
+    <script>
+    Crafty.init();
+    Crafty.background('gray');
+
+    Crafty.sprite(32, 32, "https://raw.githubusercontent.com/craftyjs/demos/master/devDemos/isometric/blank_32x32.png", {
+        blankBox: [0,0,1,1]
+    });
+
+    Crafty.sprite(32, 16, "https://raw.githubusercontent.com/craftyjs/demos/master/devDemos/isometric/blank_32x16.png", {
+        blankPlane: [0,0,1,1]
+    });
+
+    Crafty.sprite(128, 64, "https://raw.githubusercontent.com/craftyjs/demos/master/devDemos/isometric/iso-sprites.png", {
+        block: [0,0,1,2],
+        player: [1,0,1,2],
+        tower: [2,0,1,4],
+        big: [0,2,2,3],
+        plane: [2,4,1,1]
+    });
+
+    // TILSESIZE
+    var size = 16;
+    // MAPSIZE
+    var mapSize = 10;
+
+    // MAIN TILE MAP
+    var map = []; // 4x4
+    for (var i = 0; i < mapSize; i++) {
+        map[i] = [];
+        for (var j = 0; j < mapSize; j++) {
+            map[i][j] = {d: 0, c: "GridTile", i: "DOM, blankPlane"};
+        }
+    }
+    var mapEntity = Crafty.isometric.placeTileMap(size, map);
+
+
+    // PLAYER / CAMERA
+    var playerEntity = Crafty.e("2D, Multiway, Collision3D, Isometric")
+        .attr({ x: 0 * size, y: 0 * size, z: 0 * size,
+                w: 1 * size, h: 1 * size, d: 1 * size })
+        .multiway(200, {
+            UP_ARROW: -135, W: -135,
+            DOWN_ARROW: 45, S: 45,
+            RIGHT_ARROW: -45, D: -45,
+            LEFT_ARROW: 135, A: 135
+        })
+        .bind("KeyDown", function(e) {
+            if (e.key === Crafty.keys.SPACE)
+                this.z += size;
+            else if (e.key === Crafty.keys.CTRL)
+                this.z -= size;
+        })
+        .isometric();
+    mapEntity.attach(playerEntity);
+
+
+
+    // DYNAMICALLY ADDED TILES
+    var spawnTile = function(x, y, z, size) {
+        mapEntity.attach(Crafty.isometric.placeTile(size, { x: x, y: y, z: z,
+            i: "DOM, blankBox, IsometricTileDraggable, IsometricTileAreaMap, IsometricTileRemove, IsometricTileSpawn"
+        }));
+    };
+    Crafty.c("IsometricTileRemove", {
+        init: function() {
+            this.requires("Mouse");
+            this.bind("MouseDown", function(e) {
+                if (e.mouseButton === Crafty.mouseButtons.RIGHT)
+                    this._isoController.destroy();
+            });
+        }
+    });
+    Crafty.c("IsometricTileSpawn", {
+        init: function() {
+            this.requires("Mouse");
+            this.bind("Click", function(e) {
+                var ctrl = this._isoController;
+                console.log("You clicked tile at [" + ctrl._x/size + "][" + ctrl._y/size + "][" + ctrl._z/size + "]");
+                if (e.mouseButton === Crafty.mouseButtons.LEFT)
+                    spawnTile(ctrl._x/size, ctrl._y/size, playerEntity._z / size, size);
+            });
+        }
+    });
+
+
+
+    // BACKGROUND ENTITY
+    var backdrop = Crafty.e("2D, Mouse").attr({
+                        x: -window.innerWidth/2, y: -window.innerHeight/2,
+                        w: window.innerWidth, h: window.innerHeight,
+                        z: -1e9
+                    })
+                    .bind("Click", function(e) {
+                        // FIXME +/- sign of width(size/2) varies with rotation
+                        var realX = e.realX / 2 + e.realY - size / 2,
+                            realY = e.realY - e.realX / 2 - size / 2;
+                        console.log("You clicked backdrop at ", Math.round(realX/size), Math.round(realY/size));
+                        spawnTile(Math.round(realX/size), Math.round(realY/size), playerEntity._z / size, size);
+                    });
+    playerEntity._isoDisplay.attach(backdrop);
+
+
+
+    // Z-level display
+    var zDisplay = Crafty.e("2D, DOM, Text")
+        .attr({ x: 300, w: 100, z:1e9})
+        .text('z-level: ' + playerEntity._z / size)
+        .textFont({ size: '20px', weight: 'bold' })
+        .textColor("red")
+        .unselectable();
+    playerEntity._isoDisplay.attach(zDisplay);
+    playerEntity.bind("reorder", function() {
+        zDisplay.text('z-level: ' + this._z / size);
+    });
+
+
+    // VIEWPORT
+    Crafty.viewport.clampToEntities = false;
+    Crafty.viewport.centerOn(playerEntity._isoDisplay);
+    Crafty.viewport.follow(playerEntity._isoDisplay);
+
+    // VIEWPORT TRANSFORMATIONS
+    var keyRotations = {};
+    keyRotations[Crafty.keys.NUMPAD_4] = 90;
+    keyRotations[Crafty.keys.NUMPAD_8] = 0,
+    keyRotations[Crafty.keys.NUMPAD_6] = -90,
+    keyRotations[Crafty.keys.NUMPAD_2] = -180
+    mapEntity.bind("KeyDown", function(e) {
+        var rotation = keyRotations[e.key];
+        if (typeof rotation !== "undefined") {
+            this.rotation = rotation;
+        }
+    }).bind("KeyDown", function(e) {
+        if (e.key === Crafty.keys.ADD) {
+            Crafty.viewport.scale(Crafty.viewport._scale + 0.1);
+        }
+        else if (e.key === Crafty.keys.SUBSTRACT) {
+            Crafty.viewport.scale(Crafty.viewport._scale - 0.1);
+        }
+    });
+    </script>
+  </body>
+</html>
