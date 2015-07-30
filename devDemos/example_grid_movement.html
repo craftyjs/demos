@@ -1,0 +1,49 @@
+<html>
+  <head></head>
+  <body>
+    <script src="https://github.com/craftyjs/Crafty/releases/download/0.6.3/crafty.js"></script>
+    <script>
+      var size = 64;
+      var mapSize = 5;
+      Crafty.init(size * mapSize, size * mapSize);
+
+      for (var i = 0; i < mapSize; i++) {
+        for (var j = 0; j < mapSize; j++) {
+          var color;
+          if (i === 0 || j === 0 || i === mapSize - 1 || j === mapSize - 1)
+            Crafty.e("2D, Canvas, Collision, Color, Solid, WiredHitBox")
+                  .attr({x: i*size, y: j*size, w: size, h: size, z: 1})
+                  .color('lime');
+          else
+            Crafty.e("2D, Canvas, Collision, Color, WiredHitBox")
+                  .attr({x: i*size, y: j*size, w: size, h: size, z: 1})
+                  .color('gray');
+        }     
+      }
+
+      Crafty.e("2D, Canvas, Collision, Color, Tween, SolidHitBox")
+            .attr({x: 2*size - size/4, y: 2*size - size/4, w: size + size/2, h: size + size/2, z: 10})
+            .color('blue')
+            .collision(
+              [size/4,size/4], [size+size/4, size/4], [size+size/4,size+size/4], [size/4, size+size/4]
+            )
+            .bind("KeyDown", function(e) {
+              if (e.key === Crafty.keys.UP_ARROW)
+                this.tween({y: this.y - size}, 500);
+              else if (e.key === Crafty.keys.DOWN_ARROW)
+                this.tween({y: this.y + size}, 500);
+              else if (e.key === Crafty.keys.LEFT_ARROW)
+                this.tween({x: this.x - size}, 500);
+              else if (e.key === Crafty.keys.RIGHT_ARROW)
+                this.tween({x: this.x + size}, 500);
+            })
+            .onHit("Solid", function(hitDatas) {
+              var hitData = hitDatas[0];
+              this.cancelTween("x");
+              this.cancelTween("y");
+              this.x = Math.round(this.x - hitData.overlap * hitData.normal.x);
+              this.y = Math.round(this.y - hitData.overlap * hitData.normal.y);
+            })
+    </script>
+  </body>
+</html>
