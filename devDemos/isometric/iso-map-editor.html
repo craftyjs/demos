@@ -40,7 +40,13 @@
 
 
     // PLAYER / CAMERA
-    var playerEntity = Crafty.e("2D, Multiway, Collision3D, Isometric")
+    var moveZ = function(e) {
+        if (e.key === Crafty.keys.SPACE)
+            this.z += size;
+        else if (e.key === Crafty.keys.CTRL)
+            this.z -= size;
+    };
+    var playerEntity = Crafty.e("2D, Multiway, Collision3D, Isometric, CameraTile")
         .attr({ x: 0 * size, y: 0 * size, z: 0 * size,
                 w: 1 * size, h: 1 * size, d: 1 * size })
         .multiway(200, {
@@ -49,40 +55,78 @@
             RIGHT_ARROW: -45, D: -45,
             LEFT_ARROW: 135, A: 135
         })
-        .bind("KeyDown", function(e) {
-            if (e.key === Crafty.keys.SPACE)
-                this.z += size;
-            else if (e.key === Crafty.keys.CTRL)
-                this.z -= size;
+        .bind("KeyDown", moveZ)
+        .bind("EntityStartDrag", function() {
+            this.unbind("KeyDown", moveZ);
+        })
+        .bind("EntityStopDrag", function() {
+            this.uniqueBind("KeyDown", moveZ);
         })
         .isometric();
     mapEntity.attach(playerEntity);
 
 
 
-    // DYNAMICALLY ADDED TILES
-    var spawnTile = function(x, y, z, size) {
-        mapEntity.attach(Crafty.isometric.placeTile(size, { x: x, y: y, z: z,
-            i: "DOM, blankBox, IsometricTileDraggable, IsometricTileAreaMap, IsometricTileRemove, IsometricTileSpawn"
-        }));
+    // USER TILES
+    var userTiles = {};
+    var despawnTile = function(x, y, z) {
+        var hash = '[' + x + '][' + y + '][' + z + ']';
+
+        var oldTile = userTiles[hash];
+        if (oldTile) oldTile.destroy();
+        delete userTiles[hash];
     };
+    var spawnTile = function(x, y, z, size) {
+        var hash = '[' + x + '][' + y + '][' + z + ']';
+
+        var newTile = Crafty.isometric.placeTile(size, { x: x, y: y, z: z, c: "UserTile",
+            i: "DOM, blankBox, IsometricTileDraggable, IsometricTileAreaMap, IsometricTileRemove, IsometricTileSpawn"
+        });
+        mapEntity.attach(newTile);
+        userTiles[hash] = newTile;
+
+        return newTile;
+    };
+    var moveTile = function(oldX, oldY, oldZ, newX, newY, newZ) {
+        var oldHash = '[' + oldX + '][' + oldY + '][' + oldZ + ']',
+            newHash = '[' + newX + '][' + newY + '][' + newZ + ']';
+        var tile = userTiles[oldHash];
+        if (tile) userTiles[newHash] = tile;
+        delete userTiles[oldHash];
+    };
+
     Crafty.c("IsometricTileRemove", {
         init: function() {
             this.requires("Mouse");
             this.bind("MouseDown", function(e) {
-                if (e.mouseButton === Crafty.mouseButtons.RIGHT)
-                    this._isoController.destroy();
+                if (e.mouseButton === Crafty.mouseButtons.RIGHT) {
+                    var ctrl = this._isoController;
+                    var tileI = ctrl._x / size,
+                        tileJ = ctrl._y / size,
+                        tileK = ctrl._z / size;
+
+                    despawnTile(tileI, tileJ, tileK);
+                }
             });
         }
     });
     Crafty.c("IsometricTileSpawn", {
         init: function() {
-            this.requires("Mouse");
-            this.bind("Click", function(e) {
+            this.requires("IsometricTileDraggable");
+            this.bind("StopDrag", function(e) {
                 var ctrl = this._isoController;
-                console.log("You clicked tile at [" + ctrl._x/size + "][" + ctrl._y/size + "][" + ctrl._z/size + "]");
-                if (e.mouseButton === Crafty.mouseButtons.LEFT)
-                    spawnTile(ctrl._x/size, ctrl._y/size, playerEntity._z / size, size);
+                var diffX = this._x - this._oldX,
+                    diffY = this._y - this._oldY;
+                var tileI = ctrl._x / size,
+                    tileJ = ctrl._y / size,
+                    tileK = ctrl._z / size,
+                    spawnK = playerEntity._z / size;
+
+                console.log("You clicked tile at [" + tileI + "][" + tileJ + "][" + tileK + "]");
+                if ((diffX === 0 || diffY === 0) && e.mouseButton === Crafty.mouseButtons.LEFT) {
+                    despawnTile(tileI, tileJ, spawnK);
+                    spawnTile(tileI, tileJ, spawnK, size);
+                }
             });
         }
     });
@@ -91,17 +135,21 @@
 
     // BACKGROUND ENTITY
     var backdrop = Crafty.e("2D, Mouse").attr({
-                        x: -window.innerWidth/2, y: -window.innerHeight/2,
-                        w: window.innerWidth, h: window.innerHeight,
-                        z: -1e9
-                    })
-                    .bind("Click", function(e) {
-                        // FIXME +/- sign of width(size/2) varies with rotation
-                        var realX = e.realX / 2 + e.realY - size / 2,
-                            realY = e.realY - e.realX / 2 - size / 2;
-                        console.log("You clicked backdrop at ", Math.round(realX/size), Math.round(realY/size));
-                        spawnTile(Math.round(realX/size), Math.round(realY/size), playerEntity._z / size, size);
-                    });
+            x: -window.innerWidth/2, y: -window.innerHeight/2,
+            w: window.innerWidth, h: window.innerHeight,
+            z: -1e9
+        })
+        .bind("Click", function(e) {
+            var realX = e.realX / 2 + e.realY - size / 2,
+                realY = e.realY - e.realX / 2 - size / 2;
+            var tileI = Math.round(realX / size),
+                tileJ = Math.round(realY / size),
+                spawnK = playerEntity._z / size;
+
+            console.log("You clicked backdrop at [" + tileI + "][" + tileJ + "]");
+            despawnTile(tileI, tileJ, spawnK);
+            spawnTile(tileI, tileJ, spawnK, size);
+        });
     playerEntity._isoDisplay.attach(backdrop);
 
 
@@ -124,6 +172,7 @@
     Crafty.viewport.centerOn(playerEntity._isoDisplay);
     Crafty.viewport.follow(playerEntity._isoDisplay);
 
+
     // VIEWPORT TRANSFORMATIONS
     var keyRotations = {};
     keyRotations[Crafty.keys.NUMPAD_4] = 90;
@@ -135,13 +184,8 @@
         if (typeof rotation !== "undefined") {
             this.rotation = rotation;
         }
-    }).bind("KeyDown", function(e) {
-        if (e.key === Crafty.keys.ADD) {
-            Crafty.viewport.scale(Crafty.viewport._scale + 0.1);
-        }
-        else if (e.key === Crafty.keys.SUBSTRACT) {
-            Crafty.viewport.scale(Crafty.viewport._scale - 0.1);
-        }
+    }).bind("MouseWheelScroll", function(evt) {
+        Crafty.viewport.scale(Crafty.viewport._scale * (1 + evt.direction * 0.1));
     });
     </script>
   </body>
