@@ -1,0 +1,45 @@
+<html>
+  <head><meta charset="UTF-8"> </head>
+  <body>
+    <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+      // Init Crafty:
+      Crafty.init();
+
+      var itemToPlace = Crafty.e("2D, DOM, Color, Collision, Solid, WiredHitBox")
+          .attr({x: 32, y:32, w: 50, h: 50})
+          .color("rgb(0,255,0)");
+      console.log(itemToPlace);
+
+      for (comp in itemToPlace.__c) {
+          console.log(comp);
+      }
+      console.log("********************************************");
+      console.log("********************************************");
+      console.log("********************************************");
+
+      for (prop in itemToPlace) {
+          if (prop != "0" && prop != "_global" && prop != "_changed" && typeof itemToPlace[prop] != "function" && typeof itemToPlace[prop] != "object") {
+              console.log(prop+": ",itemToPlace[prop])
+           }
+      }
+      console.log("********************************************");
+      console.log("********************************************");
+      console.log("********************************************");
+
+
+      var clone = itemToPlace.clone();
+      clone.bind("Resize", function() {console.log("CloneResize")})
+      clone.bind("Change", function() {console.log("CloneChange")})
+      //clone.collision();
+      clone.x = 100;
+      clone.w = 100;
+      clone.h = 100;
+      console.log(clone);
+
+      clone.x = 200;
+
+      //clone.collision();
+    </script>
+  </body>
+</html>
