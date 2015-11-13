@@ -1,0 +1,18 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+        Crafty.init(600, 300, document.getElementById('game'));
+        Crafty.background('rgb(127,127,127)');
+
+        var ent1 = Crafty.e('2D, Canvas, Color, Draggable')
+              .attr({x: 200, y: 50, w: 50, h: 50})
+              .color('blue');
+
+        var ent2 = ent1.clone()
+              .attr({x:100, y:100});
+    </script>
+  </body>
+</html>
