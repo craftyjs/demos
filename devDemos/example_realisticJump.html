@@ -29,6 +29,12 @@
         .gravityConst(1)
         .twoway(5,17)
         .gravity("platform")
+        .bind("LandedOnGround", function(g) {
+          console.log("Landed on ground with id", g[0]);
+        })
+        .bind("LiftedOffGround", function(g) {
+          console.log("Lifted off ground with id", g[0]);
+        })
         .bind("CheckLanding", function(ground) {
           if (this._y + this._h > ground._y + this._dy) // forbid landing, if player's feet are not above ground
             this.canLand = false;
