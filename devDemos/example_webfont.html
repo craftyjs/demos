@@ -1,0 +1,34 @@
+<html>
+  <head><meta charset="UTF-8"> </head>
+  <body>
+    <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+    // Init Crafty:
+    Crafty.init();
+
+    WebFontConfig = {
+        google: { families: [ 'Scheherazade::arabic,latin', 'Indie+Flower::latin' ] },
+        /* code to execute once all font families are loaded */
+        active: function() {
+          Crafty.scene("main");
+        }
+      };
+      (function() {
+        var wf = document.createElement('script');
+        wf.type = 'text/javascript';
+        wf.async = 'true';
+        wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+          '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wf, s);
+      })();
+
+
+    Crafty.scene("main", function() {
+        Crafty.e("2D, Canvas, Text")
+            .attr({x: 100,y: 60})
+            .text("Hello, العربية!").textFont("size", '72px').textFont("family", 'Indie Flower');
+    });
+    </script>
+  </body>
+</html>
