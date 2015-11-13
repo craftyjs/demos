@@ -1,0 +1,20 @@
+<html>
+  <head><meta charset="UTF-8"> </head>
+  <body>
+    <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+    Crafty.init(800, 600);
+    Crafty.background('rgb(127,127,127)');
+    var renderMethod = 'Canvas';
+
+    for (var i = 0; i < 8; i++) {
+      for (var j = 0; j < 6; j++) {
+          console.log(i, j);
+          Crafty.e('2D, '+renderMethod+', Color')
+              .attr({ x: i * 100, y: j * 100, w: 100, h: 100, z: 1})
+              .color((i + j) % 2 ? 'green' : 'blue');
+      }
+    }
+    </script>
+  </body>
+</html>
