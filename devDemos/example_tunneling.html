@@ -1,0 +1,45 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+      Crafty.init(800, 600, document.getElementById('game'));
+      Crafty.background('rgb(127,127,127)');
+      //Crafty.timer.FPS(10);
+      Crafty.timer.steptype("semifixed", 1000);
+
+      Crafty.e("2D, DOM, Color, platform")
+        .attr({ x: 0, y: 599, w: 600, h: 1 })
+        .color('rgb(0,255,0)');
+
+      Crafty.e('2D, DOM, Color, platform')
+        .attr({ x: 200, y: 410, w: 60, h: 1 })
+        .color('rgb(0,255,0)');
+
+      Crafty.e('2D, DOM, Color, platform')
+        .attr({ x: 250, y: 420, w: 60, h: 1 })
+        .color('rgb(0,255,0)');
+
+      Crafty.e('2D, DOM, Color, platform')
+        .attr({ x: 300, y: 540, w: 60, h: 1 })
+        .color('rgb(0,255,0)');
+
+      var p = Crafty.e("2D, DOM, Color, Gravity, Twoway")
+        .attr({ x: 0, y: 100, w: 32, h: 16})
+        .color('rgb(0,0,255)')
+        .gravityConst(1 * 2500)
+        .twoway(5 * 50, 17 * 50)
+        .gravity("platform")
+        .bind("CheckLanding", function(ground) {
+          if (this._y + this._h > ground._y + this._dy) // forbid landing, if player's feet are not above ground
+            this.canLand = false;
+        })
+        .bind("Moved", function() {
+          console.log("vy", this._vy);
+          console.log("dy", this._dy);
+          console.log("ccdY = ", this._dy||0, "-", this._h, "=", (this._dy || 0) - this._h);
+        });
+    </script>
+  </body>
+</html>
