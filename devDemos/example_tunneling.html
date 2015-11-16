@@ -6,8 +6,8 @@
     <script>
       Crafty.init(800, 600, document.getElementById('game'));
       Crafty.background('rgb(127,127,127)');
-      //Crafty.timer.FPS(10);
-      Crafty.timer.steptype("semifixed", 1000);
+      //Crafty.timer.FPS(1);
+      Crafty.timer.steptype("semifixed", 5000);
 
       Crafty.e("2D, DOM, Color, platform")
         .attr({ x: 0, y: 599, w: 600, h: 1 })
@@ -26,7 +26,7 @@
         .color('rgb(0,255,0)');
 
       var p = Crafty.e("2D, DOM, Color, Gravity, Twoway")
-        .attr({ x: 0, y: 100, w: 32, h: 16})
+        .attr({ x: 0, y: 100, w: 8, h: 8})
         .color('rgb(0,0,255)')
         .gravityConst(1 * 2500)
         .twoway(5 * 50, 17 * 50)
@@ -36,9 +36,9 @@
             this.canLand = false;
         })
         .bind("Moved", function() {
-          console.log("vy", this._vy);
-          console.log("dy", this._dy);
-          console.log("ccdY = ", this._dy||0, "-", this._h, "=", (this._dy || 0) - this._h);
+          console.log("dx = ", this._dx||0);
+          console.log("dy = ", this._dy||0);
+          console.log();
         });
     </script>
   </body>
