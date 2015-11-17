@@ -7,7 +7,7 @@
       Crafty.init(800, 600, document.getElementById('game'));
       Crafty.background('rgb(127,127,127)');
       //Crafty.timer.FPS(1);
-      Crafty.timer.steptype("semifixed", 5000);
+      Crafty.timer.steptype("semifixed", 1000);
 
       Crafty.e("2D, DOM, Color, platform")
         .attr({ x: 0, y: 599, w: 600, h: 1 })
@@ -31,13 +31,14 @@
         .gravityConst(1 * 2500)
         .twoway(5 * 50, 17 * 50)
         .gravity("platform")
+        .preventGroundTunneling()
         .bind("CheckLanding", function(ground) {
           if (this._y + this._h > ground._y + this._dy) // forbid landing, if player's feet are not above ground
             this.canLand = false;
         })
         .bind("Moved", function() {
-          console.log("dx = ", this._dx||0);
-          console.log("dy = ", this._dy||0);
+          console.log("dx = ", this._dx);
+          console.log("dy = ", this._dy);
           console.log();
         });
     </script>
