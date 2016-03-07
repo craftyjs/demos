@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+  </head>
+  <body>
+    <div id="game"></div>
+    <script>
+      Crafty.init(300, 300, document.getElementById('game'));
+      Crafty.background('rgb(127,127,127)');
+
+      var p = Crafty.e('2D, Canvas, Draggable, Color')
+            .attr({ x: 0, y: 0, w: 100, h: 50, z: 0 })
+            .color('black')
+            .bind('Click', function() {
+              console.log('clicked black');
+            });
+
+      var i = Crafty.e('2D, Canvas, Color, Mouse, WiredAreaMap')
+                    .attr({ x: 5, y: 5, w: 90, h: 40, z: 0 })
+                    .areaMap([0, 0, 45, 0, 45, 20, 0, 20])
+                    .color('yellow')
+                    .bind('Click', function() {
+                      console.log('clicked yellow');
+                    });
+
+      var t = Crafty.e('2D, Canvas, Text, Mouse, VisibleMBR')
+                    .attr({ x: 40, y: 15, w: 50, h: 30, z: 0 })
+                    .text("foo!")
+                    .bind('Click', function() {
+                      console.log('clicked text');
+                    });
+
+      p.attach(t, i);
+    </script>
+  </body>
+</html>
