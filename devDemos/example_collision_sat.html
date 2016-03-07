@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+  </head>
+  <body>
+    <script>
+      Crafty.init();
+      Crafty.background('rgb(127,127,127)');
+
+      Crafty.e("2D, Fourway, Collision, DOM, Color, WiredHitBox, player")
+            .attr({x: 32, y: 32, w: 32, h: 32})
+            .collision([0, 16, 16, 0, 32, 16, 16, 32])
+            .color('green')
+            .fourway()
+            .bind('Moved', function(evt) {
+              var hitDatas, hitData;
+              if ((hitDatas = this.hit('solid'))) {
+                // resolving collision for just one collider here and assuming SAT collision
+                hitData = hitDatas[0];
+                this.x -= hitData.overlap * hitData.normal.x;
+                this.y -= hitData.overlap * hitData.normal.y;
+              }
+            });
+
+      Crafty.e("2D, Collision, DOM, Color, WiredHitBox, solid")
+            .attr({x: 64, y: 64, w: 64, h: 64})
+            .collision([0, 32, 32, 0, 64, 32, 32, 64])
+            .color('black');
+    </script>
+  </body>
+</html>
