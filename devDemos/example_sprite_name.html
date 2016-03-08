@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+  </head>
+  <body>
+    <script>
+      Crafty.init();
+      Crafty.background('rgb(127,127,127)');
+
+      Crafty.sprite(32, 32, "https://f.cloud.github.com/assets/498834/141935/4135cfb0-7299-11e2-981a-9176b10515b9.png", {
+        tile0: [0,0],
+        tile1: [1,0],
+        tile2: [2,0],
+        tile3: [0,1],
+        tile4: [1,1],
+        tile5: [2,1],
+        tile6: [0,2],
+        tile7: [1,2],
+        tile8: [2,2],
+      }, 1, 1, true);
+
+      var currentTile = 0;
+      Crafty.e('2D, Canvas, Delay, tile' + currentTile)
+            .attr({ w: 32, h: 32 })
+            .delay(function() {
+              this.sprite('tile' + ++currentTile);
+            }, 1000, 7);
+    </script>
+  </body>
+</html>
