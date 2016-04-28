@@ -1,0 +1,19 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+        Crafty.init(600, 300, document.getElementById('game'));
+        Crafty.background('rgb(255,255,255)');
+        Crafty.sprite(32, 32, "https://f.cloud.github.com/assets/498834/141935/4135cfb0-7299-11e2-981a-9176b10515b9.png", 
+          {spriteMap:[0,0]}, 1, 1, true);
+
+        var ent1 = Crafty.e("2D, DOM, spriteMap, SpriteAnimation")
+                         .attr({x: 100, y: 100});
+
+        ent1.reel('RowWrap', 8000, 5, 3, 6, 8);
+        ent1.animate('RowWrap', -1);
+    </script>
+  </body>
+</html>
