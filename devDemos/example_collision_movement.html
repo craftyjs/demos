@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+  </head>
+  <body>
+    <script>
+        Crafty.init();
+        Crafty.background('rgb(255,255,255)');
+
+        Crafty.e("2D, DOM, Color, WiredHitBox, Fourway, Collision, player")
+              .attr({x: 32, y: 32, w: 32, h: 32, z: 1})
+              .collision([0, 16, 16, 0, 32, 16, 16, 32])
+              .color('green')
+              .debugStroke('orange')
+              .fourway()
+              .bind('Moved', function(evt) {
+                var hitDatas, hitData;
+                if ((hitDatas = this.hit('solid'))) {
+                  hitData = hitDatas[0];
+                  if (hitData.type === 'SAT') {
+                    this.x -= hitData.overlap * hitData.normal.x;
+                    this.y -= hitData.overlap * hitData.normal.y;
+                  } else {
+                    this[evt.axis] = evt.oldValue;
+                  }
+                }
+              });
+
+        Crafty.e("2D, DOM, Color, solid, top")
+              .attr({x: 0, y: 0, w: 256, h: 1})
+              .color('black');
+        Crafty.e("2D, DOM, Color, solid, bottom")
+              .attr({x: 0, y: 255, w: 256, h: 1})
+              .color('black');
+        Crafty.e("2D, DOM, Color, solid, left")
+              .attr({x: 0, y: 0, w: 1, h: 256})
+              .color('black');
+        Crafty.e("2D, DOM, Color, solid, right")
+              .attr({x: 255, y: 0, w: 1, h: 256})
+              .color('black');
+
+        Crafty.e("2D, Collision, SolidHitBox, solid, center")
+              .attr({x: 96, y: 96, w: 64, h: 64})
+              .collision([0, 32, 32, 0, 64, 32, 32, 64])
+              .debugFill('black');
+    </script>
+  </body>
+</html>
