@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+  </head>
+  <body>
+    <script>
+        Crafty.init();
+        Crafty.background('rgb(255,255,255)');
+
+        Crafty.e("2D, DOM, Color, Collision, Fourway, player")
+              .attr({x: 0, y: 0, w: 32, h: 32, health: 100})
+              .color('blue')
+              .fourway()
+              .onHit('mine', function(hitDatas) {
+                for (var i = 0, l = hitDatas.length; i < l; ++i) {
+                  hitDatas[i].obj.destroy();
+                  this.health -= 25;
+                  if (this.health <= 0)
+                    this.destroy();
+                }
+              });
+
+        Crafty.e("2D, DOM, Color, mine")
+              .attr({x: 64, y: 0, w: 16, h: 16})
+              .color('green');
+
+        Crafty.e("2D, DOM, Color, mine")
+              .attr({x: 64, y: 32, w: 16, h: 16})
+              .color('green');
+
+        Crafty.e("2D, DOM, Color, mine")
+              .attr({x: 64, y: 64, w: 16, h: 16})
+              .color('green');
+
+        Crafty.e("2D, DOM, Color, mine")
+              .attr({x: 64, y: 96, w: 16, h: 16})
+              .color('green');
+    </script>
+  </body>
+</html>
