@@ -1,10 +1,9 @@
 $(document).ready(function() {
 	//init Crafty with FPS of 50 and create the canvas element
 	Crafty.init();
-	Crafty.canvas.init();
 	
 	//preload the needed assets
-	Crafty.load(["images/sprite.png", "images/bg.png"], function() {
+	Crafty.load({ "images" : ["images/sprite.png", "images/bg.png"]}, function() {
 		//splice the spritemap
 		Crafty.sprite(64, "images/sprite.png", {
 			ship: [0,0],
