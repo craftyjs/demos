@@ -1,7 +1,11 @@
+<!DOCTYPE html>
 <html>
-  <head></head>
+  <head>
+    <meta charset="UTF-8">
+  </head>
   <body>
     <div id="game"></div>
+    <p><b>Twoway</b><br />Using events to log frame count. See javascript console for debug output</p>
     <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     <script>
         Crafty.init(600, 300, document.getElementById('game'));
@@ -15,7 +19,7 @@
         Crafty.c("GroundReporter", {
             init: function() {
                 this.requires("2D, DOM, Color, Gravity")
-                    .color('rgb(0,0,255)')
+                    .color('rgb(112,175,219)')
                     .bind("hit", function() {
                       console.log("GROUND", currentFrame);
                     })
@@ -29,13 +33,13 @@
         });
 
         Crafty.e("2D, DOM, Color, platform")
-            .color('rgb(0,255,0)')
+            .color('rgb(255,140,0)')
             .attr({ x: 0, y: 280, w: 600, h: 20 });
         
         var y = -1000;
         while (y < 260) {
           Crafty.e("GroundReporter")
-            .attr({ x: 0, y: y, w: 32, h: 16 })
+            .attr({ x: 0, y: y, w: 32, h: 46 })
             .startGravity();
           y += 100;
         }

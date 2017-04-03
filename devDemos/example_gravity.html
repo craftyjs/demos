@@ -1,7 +1,12 @@
+<!DOCTYPE html>
 <html>
-  <head></head>
+  <head>
+    <meta charset="UTF-8">
+  </head>
   <body>
     <div id="game"></div>
+    
+    <p><b>Groundattacher</b><br />Move using <kbd>arrow keys</kbd> or <kbd>A</kbd>, <kbd>D</kbd>. Jump with <kbd>up arrow</kbd> or <kbd>W</kbd>.
     <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     <script>
         Crafty.init(600, 300, document.getElementById('game'));
@@ -9,10 +14,10 @@
     
         var tweenMode = false;
         Crafty.e("2D, DOM, Color, platform")
-            .color('rgb(0,255,0)')
+            .color('rgb(255,140,0)')
             .attr({ x: 0, y: 280, w: 600, h: 20 });
         Crafty.e("2D, DOM, Color, platform, Tween")
-            .color('rgb(0,255,0)')
+            .color('rgb(255,140,0)')
             .attr({ x: 100, y: 200, w: 50, h: 20 })
             .tween({x: 450, y: 150}, 2000)
             .bind("TweenEnd", function() {
@@ -23,9 +28,9 @@
                 this.tween({x: 450, y: 150}, 2000);
             });
 
-        Crafty.e("2D, DOM, Color, Gravity, Twoway, GroundAttacher, Tween")
-          .color('rgb(0,0,255)')
-          .attr({ x: 0, y: 100, w: 32, h: 16 })
+        Crafty.e("2D, DOM, Color, Gravity, Twoway, GroundAttacher")
+          .color('rgb(112, 175, 219)')
+          .attr({ x: 0, y: 100, w: 32, h: 46 })
           .gravity("platform")
           .twoway(2, 5);
     </script>

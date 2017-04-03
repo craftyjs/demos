@@ -1,31 +1,34 @@
+<!DOCTYPE html>
 <html>
-  <head></head>
+  <head>
+    <meta charset="UTF-8">
+  </head>
   <body>
     <div id="game"></div>
+    <p><b>Twoway</b><br />See javascript console for debug output</p>
     <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     <script>
       Crafty.init(600, 300, document.getElementById('game'));
       Crafty.background('rgb(127,127,127)');
-
       Crafty.e("2D, DOM, Color, platform")
-        .attr({ x: 0, y: 280, w: 600, h: 1 })
-        .color('rgb(0,255,0)');
+        .attr({ x: 0, y: 280, w: 600, h: 4 })
+        .color('rgb(255,140,0)');
 
       Crafty.e('2D, DOM, Color, platform')
-        .attr({ x: 200, y: 110, w: 60, h: 1 })
-        .color('rgb(0,255,0)');
+        .attr({ x: 200, y: 110, w: 60, h: 4 })
+        .color('rgb(255,140,0)');
 
       Crafty.e('2D, DOM, Color, platform')
-        .attr({ x: 250, y: 120, w: 60, h: 1 })
-        .color('rgb(0,255,0)');
+        .attr({ x: 250, y: 120, w: 60, h: 4 })
+        .color('rgb(255,140,0)');
 
       Crafty.e('2D, DOM, Color, platform')
-        .attr({ x: 300, y: 240, w: 60, h: 1 })
-        .color('rgb(0,255,0)');
+        .attr({ x: 300, y: 240, w: 60, h: 4 })
+        .color('rgb(255,140,0)');
 
       Crafty.e("2D, DOM, Color, Gravity, Twoway")
         .attr({ x: 0, y: 100, w: 32, h: 32})
-        .color('rgb(0,0,255)')
+        .color('rgb(112,175,219)')
         .gravityConst(1)
         .twoway(5,17)
         .gravity("platform")
