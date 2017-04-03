@@ -1,22 +1,33 @@
+<!DOCTYPE html>
 <html>
-  <head></head>
+  <head>
+    <meta charset="UTF-8">
+  </head>
   <body>
     <div id="game"></div>
+    <p><b>Double jump</b><br />Move using <kbd>arrow keys</kbd> or <kbd>A</kbd>, <kbd>D</kbd>. Jump with <kbd>up arrow</kbd> or <kbd>W</kbd>.
     <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     <script>
       Crafty.init(600, 300, document.getElementById('game'));
       Crafty.background('rgb(127,127,127)');
 
       Crafty.e("2D, DOM, Color, platform")
-        .attr({ x: 0, y: 280, w: 600, h: 1 })
-        .color('rgb(0,255,0)');
+        .attr({ x: 0, y: 280, w: 600, h: 4 })
+        .color('rgb(255,140,0)');
+
+      Crafty.e("2D, DOM, Color, platform")
+        .attr({ x: 250, y: 100, w: 40, h: 4 })
+        .color('rgb(255,140,0)');
+      
+      Crafty.e("2D, DOM, Color, platform")
+        .attr({ x: 375, y: 200, w: 40, h: 4 })
+        .color('rgb(255,140,0)');
 
       Crafty.e("2D, DOM, Color, Gravity, Twoway")
-        .attr({ x: 0, y: 260, w: 32, h: 16, hasDoubleJumpPowerUp: true})
-        .color('rgb(0,0,255)')
-        .gravityConst(0.4)
+        .attr({ x: 0, y: 260, w: 32, h: 46, hasDoubleJumpPowerUp: true})
+        .color('rgb(112, 175, 219)')
         .gravity("platform")
-        .twoway(3)
+        .twoway(150)
         .bind("CheckJumping", function(ground) {
           if (!ground && this.hasDoubleJumpPowerUp) { // allow player to double jump by using up his double jump powerup
             this.canJump = true;

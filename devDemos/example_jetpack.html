@@ -1,37 +1,40 @@
+<!DOCTYPE html>
 <html>
-  <head></head>
+  <head>
+    <meta charset="UTF-8">
+  </head>
   <body>
     <div id="game"></div>
+    <p>Move using <kbd>arrow keys</kbd> or <kbd>A</kbd>, <kbd>D</kbd>. Jump with <kbd>up arrow</kbd> or <kbd>W</kbd>. Use jetpack with <kbd>SPACE<kbd>.</p>
     <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     <script>
       Crafty.init(600, 300, document.getElementById('game'));
       Crafty.background('rgb(127,127,127)');
 
       Crafty.e("2D, DOM, Color, platform")
-        .attr({ x: 0, y: 280, w: 600, h: 1 })
-        .color('rgb(0,255,0)');
+        .attr({ x: 0, y: 280, w: 600, h: 4 })
+        .color('rgb(255,140,0)');
 
       Crafty.e('2D, DOM, Color, platform')
-        .attr({ x: 200, y: 110, w: 60, h: 1 })
-        .color('rgb(0,255,0)');
+        .attr({ x: 200, y: 110, w: 60, h: 4 })
+        .color('rgb(255,140,0)');
 
       Crafty.e('2D, DOM, Color, platform')
-        .attr({ x: 250, y: 120, w: 60, h: 1 })
-        .color('rgb(0,255,0)');
+        .attr({ x: 250, y: 120, w: 60, h: 4 })
+        .color('rgb(255,140,0)');
 
       Crafty.e('2D, DOM, Color, platform')
-        .attr({ x: 300, y: 240, w: 60, h: 1 })
-        .color('rgb(0,255,0)');
+        .attr({ x: 300, y: 240, w: 60, h: 4 })
+        .color('rgb(255,140,0)');
 
       Crafty.e("2D, DOM, Color, Gravity, Twoway, Keyboard")
-        .attr({ x: 0, y: 100, w: 32, h: 32})
-        .color('rgb(0,0,255)')
-        .gravityConst(0.7)
+        .attr({ x: 0, y: 100, w: 32, h: 46})
+        .color('rgb(112, 175, 219)')
         .gravity("platform")
-        .twoway(3, 10)
+        .twoway(150, 200)
         .bind("EnterFrame", function(frameData) {
           if (this.isDown("SPACE")) {
-            this._vy = Math.max(-5, this._vy - 1);
+            this._vy = Math.max(-250, this._vy - 15);
           }
         })
         .bind("CheckLanding", function(ground) {

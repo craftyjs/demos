@@ -1,16 +1,20 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <meta charset="UTF-8">
   </head>
   <body>
+    <div id="game"></div>
+    <p><b>SAT Collision</b><br />Example of custom hit box. Move with WASD or arrow keys.</p>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     <script>
-      Crafty.init();
+      Crafty.init(600, 300, document.getElementById('game'));
       Crafty.background('rgb(127,127,127)');
 
       Crafty.e("2D, Fourway, Collision, DOM, Color, WiredHitBox, player")
             .attr({x: 32, y: 32, w: 32, h: 32})
             .collision([0, 16, 16, 0, 32, 16, 16, 32])
-            .color('green')
+            .color('rgb(112, 175, 219)')
             .fourway()
             .bind('Moved', function(evt) {
               var hitDatas, hitData;
@@ -25,7 +29,7 @@
       Crafty.e("2D, Collision, DOM, Color, WiredHitBox, solid")
             .attr({x: 64, y: 64, w: 64, h: 64})
             .collision([0, 32, 32, 0, 64, 32, 32, 64])
-            .color('black');
+            .color('rgb(255,140,0)');
     </script>
   </body>
 </html>

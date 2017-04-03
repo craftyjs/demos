@@ -1,15 +1,19 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <meta charset="UTF-8">
   </head>
   <body>
+    <div id="game"></div>
+    <p><b>Basic MBR Collision</b><br />Move using <kbd>arrow keys</kbd> or <kbd>WASD</kbd>.
+    <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     <script>
-      Crafty.init();
+        Crafty.init(600, 300, document.getElementById('game'));
       Crafty.background('rgb(127,127,127)');
 
       Crafty.e("2D, DOM, Color, Fourway, Collision, player")
-            .attr({x: 32, y: 32, w: 32, h: 32})
-            .color('green')
+            .attr({x: 132, y: 132, w: 32, h: 32})
+            .color('rgb(112, 175, 219)')
             .fourway()
             .bind('Moved', function(evt){
               if (this.hit('solid'))
@@ -17,17 +21,17 @@
             });
 
       Crafty.e("2D, DOM, Color, solid, top")
-            .attr({x: 0, y: 0, w: 128, h: 1})
-            .color('black');
+            .attr({x: 100, y: 100, w: 128, h: 2})
+            .color('rgb(255,140,0)');
       Crafty.e("2D, DOM, Color, solid, bottom")
-            .attr({x: 0, y: 127, w: 128, h: 1})
-            .color('black');
+            .attr({x: 100, y: 227, w: 128, h: 2})
+            .color('rgb(255,140,0)');
       Crafty.e("2D, DOM, Color, solid, left")
-            .attr({x: 0, y: 0, w: 1, h: 128})
-            .color('black');
+            .attr({x: 100, y: 100, w: 2, h: 128})
+            .color('rgb(255,140,0)');
       Crafty.e("2D, DOM, Color, solid, right")
-            .attr({x: 127, y: 0, w: 1, h: 128})
-            .color('black');
+            .attr({x: 227, y: 100, w: 2, h: 128})
+            .color('rgb(255,140,0)');
     </script>
   </body>
 </html>

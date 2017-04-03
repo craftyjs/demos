@@ -1,31 +1,34 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <meta charset="UTF-8">
   </head>
   <body>
     <div id="game"></div>
+    <p><b>Click events</b><br />Example showing priority of click events. See javascript console for log output.</p>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     <script>
-      Crafty.init(300, 300, document.getElementById('game'));
+      Crafty.init(600, 300, document.getElementById('game'));
       Crafty.background('rgb(127,127,127)');
 
       var p = Crafty.e('2D, Canvas, Draggable, Color')
-            .attr({ x: 0, y: 0, w: 100, h: 50, z: 0 })
+            .attr({ x: 200, y: 100, w: 100, h: 50, z: 0 })
             .color('black')
             .bind('Click', function() {
               console.log('clicked black');
             });
 
       var i = Crafty.e('2D, Canvas, Color, Mouse, WiredAreaMap')
-                    .attr({ x: 5, y: 5, w: 90, h: 40, z: 0 })
+                    .attr({ x: 205, y: 105, w: 90, h: 40, z: 0 })
                     .areaMap([0, 0, 45, 0, 45, 20, 0, 20])
-                    .color('yellow')
+                    .color('rgb(112, 175, 219)')
                     .bind('Click', function() {
-                      console.log('clicked yellow');
+                      console.log('clicked blue');
                     });
 
-      var t = Crafty.e('2D, Canvas, Text, Mouse, VisibleMBR')
-                    .attr({ x: 40, y: 15, w: 50, h: 30, z: 0 })
-                    .text("foo!")
+      var t = Crafty.e('2D, Canvas, Text, Mouse')
+                    .attr({ x: 240, y: 115, w: 50, h: 30, z: 0 })
+                    .text("crafty.js")
                     .bind('Click', function() {
                       console.log('clicked text');
                     });
