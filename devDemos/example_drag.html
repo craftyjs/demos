@@ -1,7 +1,11 @@
+<!DOCTYPE html>
 <html>
-  <head></head>
+  <head>
+    <meta charset="UTF-8">
+  </head>
   <body>
     <div id="game"></div>
+    <p><b>Draggable</b></p>
     <script src="https://rawgithub.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     <script>
         Crafty.init(600, 300, document.getElementById('game'));
@@ -38,14 +42,13 @@
 
         Crafty.e('2D, Canvas, Color, DragDebug')
               .attr({x: 100, y: 50, w: 50, h: 50})
-              .color('green')
-              .disableDrag()
+              .color('rgb(255,140,0)')
               .enableDrag()
               .bind("EnterFrame", start);
 
         Crafty.e('2D, Canvas, Color, DragDebug')
               .attr({x: 200, y: 50, w: 50, h: 50})
-              .color('blue')
+              .color('rgb(112, 175, 219)')
               .disableDrag();
     </script>
   </body>
