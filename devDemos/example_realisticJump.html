@@ -29,8 +29,7 @@
       Crafty.e("2D, DOM, Color, Gravity, Twoway")
         .attr({ x: 0, y: 100, w: 32, h: 32})
         .color('rgb(112,175,219)')
-        .gravityConst(1)
-        .twoway(5,17)
+        .twoway(150, 350)
         .gravity("platform")
         .bind("LandedOnGround", function(g) {
           console.log("Landed on ground with id", g[0]);

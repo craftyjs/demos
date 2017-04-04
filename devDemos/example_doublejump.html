@@ -26,9 +26,8 @@
       Crafty.e("2D, DOM, Color, Gravity, Twoway")
         .attr({ x: 0, y: 260, w: 32, h: 46, hasDoubleJumpPowerUp: true})
         .color('rgb(112, 175, 219)')
-        .gravityConst(0.4)
         .gravity("platform")
-        .twoway(3)
+        .twoway(150)
         .bind("CheckJumping", function(ground) {
           if (!ground && this.hasDoubleJumpPowerUp) { // allow player to double jump by using up his double jump powerup
             this.canJump = true;

@@ -30,9 +30,8 @@
       Crafty.e("2D, DOM, Color, Gravity, Twoway, Keyboard")
         .attr({ x: 0, y: 100, w: 32, h: 46})
         .color('rgb(112, 175, 219)')
-        .gravityConst(0.7)
         .gravity("platform")
-        .twoway(3, 10)
+        .twoway(150, 200)
         .bind("EnterFrame", function(frameData) {
           if (this.isDown("SPACE")) {
             this._vy = Math.max(-250, this._vy - 15);
