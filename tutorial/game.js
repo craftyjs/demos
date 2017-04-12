@@ -87,10 +87,10 @@ window.onload = function() {
 				this.bind('enterframe', function() {
 					//move the player in a direction depending on the booleans
 					//only move the player in one direction at a time (up/down/left/right)
-					if(this.isDown("RIGHT_ARROW")) this.x += this._speed; 
-					else if(this.isDown("LEFT_ARROW")) this.x -= this._speed; 
-					else if(this.isDown("UP_ARROW")) this.y -= this._speed;
-					else if(this.isDown("DOWN_ARROW")) this.y += this._speed;
+					if(Crafty.keydown["ArrowRight"] || Crafty.keydown["Right"]) this.x += this._speed;
+					else if(Crafty.keydown["ArrowLeft"] || Crafty.keydown["Left"]) this.x -= this._speed;
+					else if(Crafty.keydown["ArrowUp"] || Crafty.keydown["Up"]) this.y -= this._speed;
+					else if(Crafty.keydown["ArrowDown"] || Crafty.keydown["Down"]) this.y += this._speed;
 				});
 				
 				return this;
@@ -106,16 +106,16 @@ window.onload = function() {
 			.animate("walk_up", 3, 3, 5)
 			.animate("walk_down", 0, 3, 2)
 			.bind("enterframe", function(e) {
-				if(this.isDown("LEFT_ARROW")) {
+				if(Crafty.keydown["ArrowLeft"] || Crafty.keydown["Left"]) {
 					if(!this.isPlaying("walk_left"))
 						this.stop().animate("walk_left", 10);
-				} else if(this.isDown("RIGHT_ARROW")) {
+				} else if(Crafty.keydown["ArrowRight"] || Crafty.keydown["Right"]) {
 					if(!this.isPlaying("walk_right"))
 						this.stop().animate("walk_right", 10);
-				} else if(this.isDown("UP_ARROW")) {
+				} else if(Crafty.keydown["ArrowUp"] || Crafty.keydown["Up"]) {
 					if(!this.isPlaying("walk_up"))
 						this.stop().animate("walk_up", 10);
-				} else if(this.isDown("DOWN_ARROW")) {
+				} else if(Crafty.keydown["ArrowDown"] || Crafty.keydown["Down"]) {
 					if(!this.isPlaying("walk_down"))
 						this.stop().animate("walk_down", 10);
 				}
