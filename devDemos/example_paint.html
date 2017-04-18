@@ -15,6 +15,8 @@
 
             _points: null,
 
+            ready: false,
+
             events: {
                 "Draw": function (e) {
                     var points = this._points;
@@ -36,7 +38,7 @@
                 "MouseDown": function (e) {
                     if (e.mouseButton !== Crafty.mouseButtons.LEFT) return;
 
-                    if (this.lockFocus()) {
+                    if (!this.ready && this.lockFocus()) {
                         this._points = [];
                         this.ready = true;
                     }
@@ -50,7 +52,7 @@
                 "MouseUp": function (e) {
                     if (e.mouseButton !== Crafty.mouseButtons.LEFT) return;
 
-                    if (this.releaseFocus()) {
+                    if (this.ready && this.releaseFocus()) {
                         this.one('PostRender', function() {
                             this.ready = false;
                         });
