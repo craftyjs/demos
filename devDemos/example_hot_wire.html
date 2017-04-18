@@ -1,0 +1,36 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <p>Move the object with your keyboard. Once your mouse hovers over the object, make sure to follow it with your mouse pointer!</p>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+        Crafty.init(600, 600, document.getElementById('game'));
+        Crafty.background('rgb(127,127,127)');
+
+        var started = false;
+
+        Crafty.e("2D, DOM, Color, Keyboard, Mouse, Fourway")
+            .attr({ w: 64, h: 64 })
+            .color('blue')
+            .fourway()
+            .bind('MouseOver', function() {
+                this.lockKeyboard();
+                started = true;
+            })
+            .bind('MouseOut', function() {
+                this.releaseKeyboard();
+            });
+
+
+        Crafty.s("HotWire", {
+            events: {
+                "EnterFrame": function (frame) {
+                    if (started && Crafty.s('Keyboard').lockKeyboard(this))
+                        alert('Kaboom!');
+                },
+            }
+        }, {}, false);
+    </script>
+  </body>
+</html>
