@@ -8,8 +8,7 @@
         Crafty.init(600, 600, document.getElementById('game'));
         Crafty.background('rgb(127,127,127)');
 
-        // see https://github.com/craftyjs/Crafty/wiki/Crafty-FAQ-(draft)
-        // for details on Canvas drawing
+
         Crafty.c("Paint", {
             required: "2D, Canvas, Mouse",
 
@@ -18,6 +17,8 @@
             ready: false,
 
             events: {
+                // see https://github.com/craftyjs/Crafty/wiki/Crafty-FAQ-(draft)
+                // for details on Canvas drawing
                 "Draw": function (e) {
                     var points = this._points;
                     if (points.length < 2*2) return;
@@ -38,7 +39,7 @@
                 "MouseDown": function (e) {
                     if (e.mouseButton !== Crafty.mouseButtons.LEFT) return;
 
-                    if (!this.ready && this.lockFocus()) {
+                    if (!this.ready && this.lockMouse()) {
                         this._points = [];
                         this.ready = true;
                     }
@@ -52,7 +53,7 @@
                 "MouseUp": function (e) {
                     if (e.mouseButton !== Crafty.mouseButtons.LEFT) return;
 
-                    if (this.ready && this.releaseFocus()) {
+                    if (this.ready && this.releaseMouse()) {
                         this.one('PostRender', function() {
                             this.ready = false;
                         });
