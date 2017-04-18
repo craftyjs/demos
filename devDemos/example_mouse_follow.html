@@ -1,0 +1,62 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <p>Drag objects around. Click or drag on background to make object follow mouse pointer.</p>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+        Crafty.init(600, 600, document.getElementById('game'));
+        Crafty.background('rgb(127,127,127)');
+
+        for (var i = 0; i < 3; ++i) {
+            Crafty.e("2D, DOM, Color, Motion, Draggable")
+                .color('blue')
+                .attr({
+                    x: Crafty.math.randomInt(0, 5) * 100, w: 100,
+                    y: Crafty.math.randomInt(0, 5) * 100, h: 100,
+                    _moveDir: new Crafty.math.Vector2D(),
+                    _moveDest: new Crafty.math.Vector2D()
+                })
+                .bind('MoveTo', function(pos) {
+                    this._moveDest.setValues(pos.x, pos.y);
+                    var dir = this._moveDir.setValues(pos.x - this._x, pos.y - this._y);
+                    this.velocity().setValues(dir.scaleToMagnitude(100));
+                })
+                .bind('Moved', function() {
+                    var moveDest = this._moveDest;
+                    var dir = this._moveDir.setValues(moveDest.x - this._x, moveDest.y - this._y);
+                    if (dir.magnitudeSq() < 100) {
+                        this.velocity().setValues(0, 0);
+                    }
+                })
+                .bind('StartDrag', function() {
+                    this.velocity().setValues(0, 0);
+                });
+        }
+
+        Crafty.s("Instructor", {
+            _dest: {},
+
+            init: function() {
+                Crafty.s('Mouse').bind('MouseDown', this.events["MouseDown"].bind(this));
+            },
+
+            events: {
+                "MouseDown": function (e) {
+                    Crafty.s('Mouse').lockFocus(this);
+                    this.events["MouseMove"].call(this, e);
+                },
+                "MouseMove": function (e) {
+                    var dest = this._dest;
+                    dest.x = e.realX;
+                    dest.y = e.realY;
+                    Crafty.trigger("MoveTo", dest);
+                },
+                "MouseUp": function (e) {
+                    Crafty.s('Mouse').releaseFocus(this);
+                }
+            }
+        }, {}, false);
+    </script>
+  </body>
+</html>
