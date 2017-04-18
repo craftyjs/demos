@@ -43,7 +43,7 @@
 
             events: {
                 "MouseDown": function (e) {
-                    Crafty.s('Mouse').lockFocus(this);
+                    Crafty.s('Mouse').lockMouse(this);
                     this.events["MouseMove"].call(this, e);
                 },
                 "MouseMove": function (e) {
@@ -53,7 +53,7 @@
                     Crafty.trigger("MoveTo", dest);
                 },
                 "MouseUp": function (e) {
-                    Crafty.s('Mouse').releaseFocus(this);
+                    Crafty.s('Mouse').releaseMouse(this);
                 }
             }
         }, {}, false);
