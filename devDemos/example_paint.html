@@ -1,0 +1,68 @@
+<html>
+  <head></head>
+  <body>
+    <div id="game"></div>
+    <p>Draw on the viewport with the mouse.</p>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+        Crafty.init(600, 600, document.getElementById('game'));
+        Crafty.background('rgb(127,127,127)');
+
+        // see https://github.com/craftyjs/Crafty/wiki/Crafty-FAQ-(draft)
+        // for details on Canvas drawing
+        Crafty.c("Paint", {
+            required: "2D, Canvas, Mouse",
+
+            _points: null,
+
+            events: {
+                "Draw": function (e) {
+                    var points = this._points;
+                    if (points.length < 2*2) return;
+
+                    var ctx = e.ctx;
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = "orange";
+                    ctx.beginPath();
+
+                    ctx.moveTo(points[0], points[1]);
+                    for (var i = 2, l = points.length; i < l; i += 2) {
+                        ctx.lineTo(points[i], points[i + 1]);
+                    }
+
+                    ctx.stroke();
+                },
+
+                "MouseDown": function (e) {
+                    if (e.mouseButton !== Crafty.mouseButtons.LEFT) return;
+
+                    if (this.lockFocus()) {
+                        this._points = [];
+                        this.ready = true;
+                    }
+                },
+                "MouseMove": function (e) {
+                    if (!this.ready) return;
+
+                    this._points.push(e.realX, e.realY);
+                    this.trigger("Invalidate");
+                },
+                "MouseUp": function (e) {
+                    if (e.mouseButton !== Crafty.mouseButtons.LEFT) return;
+
+                    if (this.releaseFocus()) {
+                        this.one('PostRender', function() {
+                            this.ready = false;
+                        });
+                    }
+                }
+            }
+        });
+
+        Crafty.e("Paint").attr({
+            w: Crafty.viewport._width,
+            h: Crafty.viewport._height
+        });
+    </script>
+  </body>
+</html>
