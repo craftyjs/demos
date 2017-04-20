@@ -12,7 +12,10 @@ window.onload = function() {
 	
 	Crafty.background("url('images/bg.png') no-repeat");
 	
-	var scoreEnt = Crafty.e("2D, DOM, Text").attr({x: 5, y: 5, w: Crafty.viewport.width, h: 50}).text("Score: 0"),
+	var scoreEnt = Crafty.e("2D, DOM, Text")
+						.attr({x: 5, y: 5, w: Crafty.viewport.width, h: 50})
+						.text("Score: 0")
+						.unselectable(),
 		score = 0;
 	
 	Crafty.c("Fruit", {
