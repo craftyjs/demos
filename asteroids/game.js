@@ -178,7 +178,7 @@ $(document).ready(function() {
 					
 					asteroidCount++;
 					//split into two asteroids by creating another asteroid
-					Crafty.e("2D, DOM, "+size+", Collision, asteroid").attr({x: this._x, y: this._y});
+					Crafty.e("2D, Canvas, "+size+", Collision, asteroid").attr({x: this._x, y: this._y});
 				});
 				
 			}
@@ -191,7 +191,7 @@ $(document).ready(function() {
 			lastCount = rocks;
 			
 			for(var i = 0; i < rocks; i++) {
-				Crafty.e("2D, DOM, big, Collision, asteroid");
+				Crafty.e("2D, Canvas, big, Collision, asteroid");
 			}
 		}
 		//first level has between 1 and 10 asteroids
