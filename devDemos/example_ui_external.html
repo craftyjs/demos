@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>My CraftyJs Game</title>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <!-- CSS for GUI: static main container and contained text component -->
+    <style>
+      #gui {
+        position: relative;
+        text-align: center;
+        z-index: 6000000;
+      }
+      #scoreText {
+        float: left;
+        color: blue;
+        font-size: x-large;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cr-stage"></div>
+    <p>Displays external UI elements on top of Crafty's stage.</p>
+    <script>
+      window.addEventListener('load', function() {
+        // will init the game with specified dimensions in the #cr-stage div
+        Crafty.init(600, 300, document.getElementById('cr-stage'));
+
+        // green box which will go out-of-view with elapsed time
+        Crafty.e("2D, Canvas, Color, green_box")
+          .attr({x: 0, y: 0, w: 50, h: 50})
+          .color("rgb(0,255,0)");
+
+        // main gui component, put all your static gui stuff in here
+        var gui = document.createElement("div");
+        gui.setAttribute("id", "gui"); // set id!
+
+        // one of the gui components: score text
+        var scoreText = document.createElement("div");
+        scoreText.setAttribute("id", "scoreText"); // set id!
+        scoreText.appendChild(document.createTextNode("0"));
+        Crafty.bind("Score", function(newValue) {
+          // modify external gui component in response to Crafty event
+          scoreText.innerHTML = newValue;
+        });
+
+        // append external gui components - requires viewport reload!
+        gui.appendChild(scoreText);
+        Crafty.stage.elem.appendChild(gui);
+        Crafty.viewport.reload();
+
+        Crafty.bind("EnterFrame", function() {
+          Crafty.viewport.x += 1; // all entites will move but gui won't
+          Crafty.trigger("Score", Crafty.viewport.x);
+        });
+
+      }, false);
+    </script>
+  </body>
+</html>
