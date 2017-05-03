@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>My CraftyJs Game</title>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+  </head>
+  <body>
+    <div id="cr-stage"></div>
+    <script>
+      window.addEventListener('load', function() {
+        // will init the game with specified dimensions in the #cr-stage div
+        Crafty.init(600, 300, document.getElementById('cr-stage'));
+
+        // Define a UI layer that is completely static and sits above the other layers
+        Crafty.createLayer("UI", "DOM", {
+          xResponse: 0, yResponse:0, scaleResponse:0, z: 50
+        });
+
+        // Some text that displays current button clicked, sits in the UI layer
+        Crafty.e("2D, UI, Text")
+          .textColor("black")
+          .textFont({size: '20px', family:'Arial'})
+          .attr({x: 20, y: 50, w: 200})
+          .text("No button clicked.")
+          // Listen to Crafty event 'ButtonClick' and change text accordingly
+          .bind("ButtonClick", function(buttonName) {
+            this.text("Clicked " + buttonName + ".");
+          });
+
+        // Custom GUI elements that sit in the UI layer, in this case clickable buttons
+        Crafty.e("2D, UI, HTML")
+          .attr({x: 20, y: 20, w: 200, h: 20})
+          .append(
+            "<button class='button' name='Button 1'>Button 1</button>" +
+            "<button class='button' name='Button 2'>Button 2</button>"
+          );
+        // Listen to DOM event 'click' on buttons, then trigger Crafty event 'ButtonClick'
+        var buttons = document.getElementsByClassName('button');
+        for (var i = 0, l = buttons.length; i < l; ++i) {
+          buttons[i].onclick = function(evt) {
+            Crafty.trigger("ButtonClick", evt.target.name);
+          };
+        }
+
+      }, false);
+    </script>
+  </body>
+</html>
