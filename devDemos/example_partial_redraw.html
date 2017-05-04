@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <div id="game"></div>
+    <p>
+    Example showcasing partial canvas redrawing.
+    Area inside red debug rectangles is redrawn.
+    Toggle flag in code for alternate entity distribution.
+    </p>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+    var i, l;
+
+    Crafty.init(800, 600);
+    Crafty.timer.steptype('variable', 10000);
+    Crafty.background("#000");
+
+    Crafty.s("DefaultCanvasLayer").debugDirty = true;
+
+    Crafty.e('Background, 2D, Canvas, Color')
+      .attr({x:0, y:0, w:Crafty.viewport.width, h:Crafty.viewport.height, z:1})
+      .color('green');
+
+    /*
+    Crafty.e('FPS, 2D, Canvas, Text')
+      .attr({ x: 50, y: 50, w: 100, h: 100, z: 50 })
+      .text(function (renderTime) { return "Render time: " + renderTime + "ms"; })
+      .dynamicTextGeneration(true, "MeasureRenderTime");
+    */
+
+    Crafty.e('Floor, 2D, Canvas, Color')
+      .attr({x: 0, y: 590, w: 800, h: 10, z: 5})
+      .color('orange');
+
+    var e;
+    var entities = [];
+    // TOGGLE THIS FLAG FOR ALTERNATE ENTITY DISTRIBUTION
+    if (false) {
+      for (i = 0; i < 12; ++i) {
+        e = Crafty.e('JumpBox, 2D, Canvas, Color, Twoway, Gravity')
+          .attr({x: (i+1) * 64 - 2, y: 0, w: 4, h: 4, z: 6})
+          .color('blue')
+          .twoway(200, 700)
+          .gravity('Floor')
+          .preventGroundTunneling();
+        entities.push(e);
+      }
+    } else {
+      for (i = 0; i < 265; ++i) {
+        var e = Crafty.e('JumpBox, 2D, Canvas, Color, Twoway, Gravity')
+          .attr({x: i*3, y: 0, w: 5, h: 60, z: 6})
+          .color('blue')
+          .twoway(200, 700)
+          .gravity('Floor')
+          .preventGroundTunneling();
+        entities.push(e);
+      }
+    }
+    Crafty.bind('EnterFrame', function() {
+      for (i = 0, l = entities.length; i < l; i += 2) {
+        entities[i].jump();
+      }
+    });
+
+    Crafty.e('DragBox, 2D, Canvas, Color, Draggable')
+      .attr({x:0, y:0, w:33, h:33, z:10})
+      .color('white');
+
+    //Crafty.viewport.scale(2.51111);
+    </script>
+  </body>
+</html>
