@@ -10,6 +10,8 @@
     Example showcasing partial canvas redrawing.
     Area inside red debug rectangles is redrawn.
     Toggle flag in code for alternate entity distribution.
+    Pan the viewport by dragging it with mouse.
+    Zoom the viewport by scrolling mouse wheel.
     </p>
     <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
     <script>
@@ -17,13 +19,13 @@
 
     Crafty.init(800, 600);
     Crafty.timer.steptype('variable', 10000);
-    Crafty.background("#000");
+    Crafty.background("darkgray");
 
     Crafty.s("DefaultCanvasLayer").debugDirty = true;
 
     Crafty.e('Background, 2D, Canvas, Color')
-      .attr({x:0, y:0, w:Crafty.viewport.width, h:Crafty.viewport.height, z:1})
-      .color('green');
+      .attr({x:-300, y:-200, w:600, h:400, z:1})
+      .color('gray');
 
     /*
     Crafty.e('FPS, 2D, Canvas, Text')
@@ -33,7 +35,7 @@
     */
 
     Crafty.e('Floor, 2D, Canvas, Color')
-      .attr({x: 0, y: 590, w: 800, h: 10, z: 5})
+      .attr({x: -400, y: 290, w: 800, h: 10, z: 5})
       .color('orange');
 
     var e;
@@ -42,7 +44,7 @@
     if (false) {
       for (i = 0; i < 12; ++i) {
         e = Crafty.e('JumpBox, 2D, Canvas, Color, Twoway, Gravity')
-          .attr({x: (i+1) * 64 - 2, y: 0, w: 4, h: 4, z: 6})
+          .attr({x: -384 + (i+1) * 64 - 2, y: -300, w: 4, h: 4, z: 6})
           .color('blue')
           .twoway(200, 700)
           .gravity('Floor')
@@ -52,7 +54,7 @@
     } else {
       for (i = 0; i < 265; ++i) {
         var e = Crafty.e('JumpBox, 2D, Canvas, Color, Twoway, Gravity')
-          .attr({x: i*3, y: 0, w: 5, h: 60, z: 6})
+          .attr({x: -400 + i*3, y: -300, w: 5, h: 60, z: 6})
           .color('blue')
           .twoway(200, 700)
           .gravity('Floor')
@@ -67,10 +69,20 @@
     });
 
     Crafty.e('DragBox, 2D, Canvas, Color, Draggable')
+      //.requires('VisibleMBR')
       .attr({x:0, y:0, w:33, h:33, z:10})
       .color('white');
 
-    //Crafty.viewport.scale(2.51111);
+
+    Crafty.viewport.clampToEntities = false;
+    Crafty.viewport.mouselook(true);
+    Crafty.bind("MouseWheelScroll", function(evt) {
+        Crafty.viewport.scale(Crafty.viewport._scale * (1 + evt.direction * 0.1));
+    });
+
+    Crafty.viewport.x += 400;
+    Crafty.viewport.y += 300;
+    Crafty.viewport.scale(1.51111);
     </script>
   </body>
 </html>
