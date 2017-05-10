@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <div id="game"></div>
+    <p>Example using properties field in components. See javascript console for log output.</p>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+      Crafty.init(600, 300, document.getElementById('game'));
+
+      Crafty.c("Square", {
+          required: "2D, Canvas, Color",
+
+          init: function() {
+              this.w = 30;
+              this.h = 30;
+          },
+
+          // These properties will be defined upon init
+          properties: {
+              // public `area` property, used by external code not aware of the implementation
+              area: {
+                  // setter for the `area` property
+                  set: function(value) {
+                      // set the entity's width and height to the square root of the new area
+                      var sqrt = Math.sqrt(value);
+                      this.w = sqrt;
+                      this.h = sqrt;
+                      // avoid "complex" area computations, by caching it for retrieval
+                      this._area = value;
+                  },
+
+                  // getter for the `area` property
+                  get: function() {
+                      // return the cached area value
+                      return this._area;
+                  },
+
+                  // make the property show up in property enumerations
+                  enumerable: true,
+                  // property shouldn't be deletable
+                  configurable: false
+              },
+
+              // private `_area` property, serves as a cached value for the area computation
+              _area: {
+                  // set the initial value to this.w * this.h
+                  value: 30 * 30,
+                  // it's a mutable property
+                  writable: true,
+                  // hide the property from property enumerations
+                  enumerable:false,
+                  // property shouldn't be deletable
+                  configurable: false
+              }
+          }
+      });
+
+      var sq = Crafty.e("Square");
+      Crafty.log('Initial area:', sq.area); // logs '900'
+      Crafty.log('Initial width:', sq.w); // logs '30'
+      Crafty.log('Initial height:', sq.h); // logs '30'
+
+      sq.area = 400;
+      Crafty.log('New area:', sq.area); // logs '400'
+      Crafty.log('New width:', sq.w); // logs '20'
+      Crafty.log('New height:', sq.h); // logs '20'
+    </script>
+  </body>
+</html>
