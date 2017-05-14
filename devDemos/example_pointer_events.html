@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <div id="game"></div>
+    <p>Move mouse pointer or finger over the boxes. Observe log output. Switch boolean flag in code.</p>
+    <script src="https://cdn.rawgit.com/craftyjs/Crafty/release/dist/crafty-min.js"></script>
+    <script>
+      Crafty.init(600, 300, document.getElementById('game'));
+      Crafty.background('rgb(127,127,127)');
+
+      // toggle this flag
+      Crafty.multitouch(false);
+
+      var e = Crafty.e('2D, Canvas, Color')
+          .attr({x:100, y:100, w:100, h:100})
+          .color('green');
+      var f = Crafty.e('2D, Canvas, Color')
+          .attr({x:200, y:100, w:100, h:100})
+          .color('blue');
+
+      var mouseEvents = [
+        'MouseOver',
+        'MouseMove',
+        'MouseOut',
+        'MouseDown',
+        'MouseUp',
+        'Click',
+        'DoubleClick'
+      ];
+      var touchEvents = [
+        'TouchOver',
+        'TouchMove',
+        'TouchOut',
+        'TouchStart',
+        'TouchEnd',
+        'TouchCancel'
+      ];
+
+      if (!Crafty.multitouch()) {
+        for (var mouseEvent, i = 0; i < mouseEvents.length; i++) {
+          mouseEvent = mouseEvents[i];
+          e.requires('Mouse').bind(mouseEvent, function(e) {
+            Crafty.log('green', e.eventName);
+          });
+          f.requires('Mouse').bind(mouseEvent, function(e) {
+            Crafty.log('blue', e.eventName);
+          })
+        }
+      } else {
+        for (var touchEvent, i = 0; i < touchEvents.length; i++) {
+          touchEvent = touchEvents[i];
+          e.requires('Touch').bind(touchEvent, function(e) {
+            Crafty.log('green', e.eventName);
+          });
+          f.requires('Touch').bind(touchEvent, function(e) {
+            Crafty.log('blue', e.eventName);
+          })
+        }
+      }
+    </script>
+  </body>
+</html>
