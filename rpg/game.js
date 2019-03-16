@@ -1,7 +1,6 @@
 window.onload = function() {
 	//start crafty
 	Crafty.init(400, 320);
-	Crafty.canvas.init();
 	
 	//turn the sprite map into usable components
 	Crafty.sprite(16, "images/sprite.png", {
@@ -29,8 +28,8 @@ window.onload = function() {
 				if(i > 0 && i < 24 && j > 0 && j < 19 && Crafty.math.randomInt(0, 50) > 49) {
 					Crafty.e("2D, DOM, flower, solid, SpriteAnimation")
 						.attr({x: i * 16, y: j * 16})
-						.animate("wind", 0, 1, 3)
-						.animate("wind", 80, -1);
+						.reel("wind", 1600, 0, 1, 3)
+						.animate("wind", -1);
 				}
 			}
 		}
@@ -55,20 +54,17 @@ window.onload = function() {
 	
 	//the loading screen that will display while our assets load
 	Crafty.scene("loading", function() {
-		//load takes an array of assets and a callback when complete
-		Crafty.load(["images/sprite.png"], function () {
-			Crafty.scene("main"); //when everything is loaded, run the main scene
-		});
-		
 		//black background with some loading text
 		Crafty.background("#000");
 		Crafty.e("2D, DOM, Text").attr({w: 100, h: 20, x: 150, y: 120})
 			.text("Loading")
 			.css({"text-align": "center"});
+
+		//load takes an array of assets and a callback when complete
+		Crafty.load({images: ["images/sprite.png"]}, function () {
+			Crafty.scene("main"); //when everything is loaded, run the main scene
+		});
 	});
-	
-	//automatically play the loading scene
-	Crafty.scene("loading");
 	
 	Crafty.scene("main", function() {
 		generateWorld();
@@ -77,37 +73,38 @@ window.onload = function() {
 			init: function() {
 					//setup animations
 					this.requires("SpriteAnimation, Collision")
-					.animate("walk_left", 6, 3, 8)
-					.animate("walk_right", 9, 3, 11)
-					.animate("walk_up", 3, 3, 5)
-					.animate("walk_down", 0, 3, 2)
+					.reel("walk_left", 200, 6, 3, 3)
+					.reel("walk_right", 200, 9, 3, 3)
+					.reel("walk_up", 200, 3, 3, 3)
+					.reel("walk_down", 200, 0, 3, 3)
 					//change direction when a direction change event is received
 					.bind("NewDirection",
 						function (direction) {
 							if (direction.x < 0) {
 								if (!this.isPlaying("walk_left"))
-									this.stop().animate("walk_left", 10, -1);
+									this.animate("walk_left", -1);
 							}
 							if (direction.x > 0) {
 								if (!this.isPlaying("walk_right"))
-									this.stop().animate("walk_right", 10, -1);
+									this.animate("walk_right", -1);
 							}
 							if (direction.y < 0) {
 								if (!this.isPlaying("walk_up"))
-									this.stop().animate("walk_up", 10, -1);
+									this.animate("walk_up", -1);
 							}
 							if (direction.y > 0) {
 								if (!this.isPlaying("walk_down"))
-									this.stop().animate("walk_down", 10, -1);
+									this.animate("walk_down", -1);
 							}
 							if(!direction.x && !direction.y) {
-								this.stop();
+								this.pauseAnimation();
 							}
 					})
 					// A rudimentary way to prevent the user from passing solid areas
-					.bind('Moved', function(from) {
+					.bind('Move', function(from) {
 						if(this.hit('solid')){
-							this.attr({x: from.x, y:from.y});
+							this._x = from._x;
+							this._y = from._y;
 						}
 					});
 				return this;
@@ -129,6 +126,10 @@ window.onload = function() {
 		//create our player entity with some premade components
 		player = Crafty.e("2D, Canvas, player, RightControls, Hero, Animate, Collision")
 			.attr({x: 160, y: 144, z: 1})
-			.rightControls(1);
+			.rightControls(50);
 	});
+
+		
+	//automatically play the loading scene
+	Crafty.scene("loading");
 };
